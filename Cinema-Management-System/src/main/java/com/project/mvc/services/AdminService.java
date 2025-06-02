@@ -1,13 +1,15 @@
 package com.project.mvc.services;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import com.project.mvc.model.*;
-import com.project.mvc.repository.*;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalTime;
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.project.mvc.model.Film;
+import com.project.mvc.repository.FilmRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +45,7 @@ public class AdminService {
         return filmRepo.save(film);
     }
 
+    @Transactional
     public Film updateFilm(
         String filmId,
         LocalTime durasi,
@@ -61,8 +64,14 @@ public class AdminService {
         return filmRepo.save(film);
     }
 
+    public void deleteFilm(String filmId){
+        Film film = filmRepo.findById(filmId)
+        .orElseThrow(() -> new RuntimeException("Film not found"));
+
+        filmRepo.delete(film);
+    }
+
     public List<Film> getAllFilm(){
         return filmRepo.findAll();
     }
 }
-
