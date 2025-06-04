@@ -13,4 +13,10 @@ public class User extends Person {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Ticket> tickets;
+    
+    private String nama;
+
+    public String getNama() {
+        return nama;
+    }
 }

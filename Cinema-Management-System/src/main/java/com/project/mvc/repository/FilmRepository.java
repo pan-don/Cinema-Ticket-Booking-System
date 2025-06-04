@@ -9,4 +9,5 @@ import com.project.mvc.model.Film;
 public interface FilmRepository extends JpaRepository<Film, String> {
     Optional<Film> findByJudul(String judul);
     Optional<Film> findById(String id);
+    Optional<Film> findByNama(String nama);
 }
