@@ -47,4 +47,24 @@ public class Film {
     
     @Column(nullable = false)
     private int tiketTerjual;
+
+    @Column(nullable = false)
+    private int kuota;
+
+    @Column(nullable = false)
+    private int hargaTiket;
+    
+    @Column(nullable = false)
+    private String nama;
+
+    public int getKuota() {
+        return kuota;
+    }
+    public int getHargaTiket() {
+        return hargaTiket;
+    }
+
+    public String getNama() {
+        return nama;
+    }
 }

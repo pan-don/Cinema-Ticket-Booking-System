@@ -1,11 +1,11 @@
 package com.project.mvc.controller;
 
-import com.project.mvc.services.PembayaranService;
+import com.project.mvc.services.TransaksiService;
 
 public class PembayaranController {
-    private final PembayaranService pembayaranService;
+    private final TransaksiService pembayaranService;
 
-    public PembayaranController(PembayaranService pembayaranService) {
+    public PembayaranController(TransaksiService pembayaranService) {
         this.pembayaranService = pembayaranService;
     }
 
