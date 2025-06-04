@@ -6,113 +6,139 @@
     <title>Login</title>
     <style>
         body {
-            background: #fff;
+            min-height: 100vh;
+            margin: 0;
             font-family: 'Segoe UI', Arial, sans-serif;
+            background: url('https://id.images.search.yahoo.com/images/view;_ylt=AwrKCxMiAkBo6r8Z2RLNQwx.;_ylu=c2VjA3NyBHNsawNpbWcEb2lkAzE0NTE0ODVlMmIyMWNhNTBkYzBiMzY4MmI2Zjk3NTE2BGdwb3MDNARpdANiaW5n?back=https%3A%2F%2Fid.images.search.yahoo.com%2Fsearch%2Fimages%3Fp%3Dlogin%2Bdashboard%2Bnetflix%26ei%3DUTF-8%26type%3DE210ID91215G0%26fr%3Dmcafee%26fr2%3Dp%253As%252Cv%253Ai%252Cm%253Asb-top%26tab%3Dorganic%26ri%3D4&w=1440&h=900&imgurl=user-images.githubusercontent.com%2F91483223%2F187032751-36f06c96-69c2-4fb3-9421-38d5c25bdf74.png&rurl=https%3A%2F%2Fgithub.com%2Fsherifgowaied%2FNetflix-Mern-with-Admin-Dashboard&size=1904KB&p=login+dashboard+netflix&oid=1451485e2b21ca50dc0b3682b6f97516&fr2=p%3As%2Cv%3Ai%2Cm%3Asb-top&fr=mcafee&tt=GitHub+-+sherifgowaied%2FNetflix-Mern-with-Admin-Dashboard%3A+Full+Stack+...&b=0&ni=160&no=4&ts=&tab=organic&sigr=d5f2Q.ZqmjoV&sigb=jqTtQsc8tZBw&sigi=jnfPJbJAlHTF&sigt=8ddbIa5h8T5L&.crumb=aLoa0kvLzC/&fr=mcafee&fr2=p%3As%2Cv%3Ai%2Cm%3Asb-top&type=E210ID91215G0') no-repeat center center fixed;
+            background-size: cover;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
+        }
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 0;
         }
         .login-container {
-            width: 350px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-            padding: 40px 30px 30px 30px;
+            position: relative;
+            z-index: 1;
+            background: rgba(20, 20, 20, 0.92);
+            border-radius: 8px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.4);
+            width: 340px;
+            padding: 40px 32px 32px 32px;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            color: #fff;
         }
-        .avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: #f2f2f2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .avatar svg {
-            width: 50px;
-            height: 50px;
-            fill: #bdbdbd;
-        }
-        h2 {
-            margin: 0 0 25px 0;
-            font-weight: 500;
-            color: #444;
-            letter-spacing: 2px;
+        .login-container h2 {
+            margin: 0 0 24px 0;
+            font-weight: 600;
+            font-size: 2rem;
+            letter-spacing: 1px;
         }
         .input-group {
-            width: 100%;
             margin-bottom: 18px;
-            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .input-group label {
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            color: #b3b3b3;
         }
         .input-group input {
-            width: 100%;
-            padding: 12px 40px 12px 40px;
-            border: 1px solid #d9d9d9;
-            border-radius: 5px;
-            font-size: 16px;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            background: #333;
+            color: #fff;
             outline: none;
         }
-        .input-group .icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #bdbdbd;
-            font-size: 18px;
+        .input-group input:focus {
+            background: #444;
+        }
+        .role-group {
+            display: flex;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+        .role-group label {
+            font-size: 1rem;
+            color: #b3b3b3;
+            cursor: pointer;
         }
         .login-btn {
             width: 100%;
-            background: #00baff;
+            background: #e50914;
             color: #fff;
             border: none;
-            border-radius: 5px;
-            padding: 12px;
-            font-size: 18px;
-            font-weight: 500;
+            border-radius: 4px;
+            padding: 13px 0;
+            font-size: 1.1rem;
+            font-weight: 600;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 8px;
             transition: background 0.2s;
         }
         .login-btn:hover {
-            background: #009fd6;
+            background: #b0060f;
         }
         .forgot {
             margin-top: 18px;
-            font-size: 14px;
-            color: #888;
+            font-size: 0.98rem;
+            color: #b3b3b3;
+            text-align: center;
         }
         .forgot a {
-            color: #00baff;
-            text-decoration: none;
-        }
-        .forgot a:hover {
+            color: #fff;
             text-decoration: underline;
+        }
+        .signup {
+            margin-top: 22px;
+            text-align: center;
+            color: #b3b3b3;
+            font-size: 1rem;
+        }
+        .signup a {
+            color: #fff;
+            text-decoration: underline;
+        }
+        @media (max-width: 400px) {
+            .login-container {
+                width: 95vw;
+                padding: 24px 8vw;
+            }
         }
     </style>
 </head>
 <body>
-    <form class="login-container">
-        <div class="avatar">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M12 14c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z"/></svg>
-        </div>
-        <h2>LOGIN</h2>
+    <div class="overlay"></div>
+    <form class="login-container" autocomplete="off">
+        <h2>Sign In</h2>
         <div class="input-group">
-            <span class="icon"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 12c2.7 0 8 1.34 8 4v2H4v-2c0-2.66 5.3-4 8-4zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg></span>
-            <input type="text" placeholder="Username" name="username" required>
+            <label for="username">Email or Username</label>
+            <input type="text" id="username" name="username" required autocomplete="username">
         </div>
         <div class="input-group">
-            <span class="icon"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 17a2 2 0 0 0 2-2v-2a2 2 0 0 0-4 0v2a2 2 0 0 0 2 2zm6-6V9a6 6 0 0 0-12 0v2a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-8-2a4 4 0 0 1 8 0v2H6V9z"/></svg></span>
-            <input type="password" placeholder="********" name="password" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required autocomplete="current-password">
         </div>
-        <button class="login-btn" type="submit">LOGIN</button>
-        <div class="forgot">Forgot Your Password? <a href="#">Click here</a></div>
+        <div class="role-group">
+            <label>
+                <input type="radio" name="role" value="user" checked>
+                User
+            </label>
+            <label>
+                <input type="radio" name="role" value="admin">
+                Admin
+            </label>
+        </div>
+        <button class="login-btn" type="submit">Sign In</button>
+        <div class="signup">New to Cinema? <a href="#">Sign up now</a></div>
     </form>
 </body>
 </html>
