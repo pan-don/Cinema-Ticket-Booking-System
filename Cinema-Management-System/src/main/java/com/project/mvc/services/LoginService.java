@@ -19,7 +19,7 @@ public class LoginService {
         User user = new User();
         user.setUsername(username);
         user.setPassword(password); 
-        user.setRole("User");
+        user.setRole("USER");
 
         return userRepo.save(user);
     }

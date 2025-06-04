@@ -13,9 +13,8 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class AdminService {
+public class FilmService {
     private final FilmRepository filmRepo;
-    // private final JadwalRepository jadwalRepo;
 
     @Transactional
     public Film createFilm(
@@ -27,7 +26,7 @@ public class AdminService {
         int kapasitasRuangan,
         int harga,
         int tiketTerjual
-        ) {
+    ) {
         if(filmRepo.findByJudul(judul).isPresent()) {
             throw new RuntimeException("Judul already exists");
         }
@@ -48,7 +47,6 @@ public class AdminService {
     @Transactional
     public Film updateFilm(
         String filmId,
-        LocalTime durasi,
         String ruangan,
         int kapasitasRuangan,
         int harga
@@ -56,7 +54,6 @@ public class AdminService {
         Film film = filmRepo.findById(filmId)
         .orElseThrow(() -> new RuntimeException("Film not found"));
 
-        film.setDurasi(durasi);
         film.setRuangan(ruangan);
         film.setKapasitasRuangan(kapasitasRuangan);
         film.setHarga(harga);
@@ -71,6 +68,7 @@ public class AdminService {
         filmRepo.delete(film);
     }
 
+    @Transactional(readOnly=true)
     public List<Film> getAllFilm(){
         return filmRepo.findAll();
     }

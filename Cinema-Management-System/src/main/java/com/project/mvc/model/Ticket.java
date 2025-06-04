@@ -1,9 +1,21 @@
 package com.project.mvc.model;
 
-import jakarta.persistence.*;
-import lombok.*;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -22,11 +34,18 @@ public class Ticket {
     private User user;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name="jadwal_id", nullable = false)
+    private Jadwal jadwal;
+
+    @ManyToOne(optional = false)
     @JoinColumn(name="film_id", nullable = false)
     private Film film;
 
     @Column(nullable = false)
-    private int hargaTotal;
+    private int pembayaran; 
+
+    @Column(nullable = false)
+    private int kembalian;
 
     @Column(nullable = false)
     private LocalDateTime waktuPembelian;

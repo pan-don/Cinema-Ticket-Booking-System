@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Movie Theater</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-gray-800 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">Admin Dashboard</h1>
+            <a href="login.html" class="text-sm hover:text-gray-300">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-6">
+        <!-- Film Management Section -->
+        <section id="film-management" class="mb-8 p-6 bg-white rounded-lg shadow">
+            <h2 class="text-2xl font-semibold mb-6 text-gray-700 border-b pb-2">Film Management</h2>
+
+            <!-- Add New Film Form -->
+            <div class="mb-6">
+                <h3 class="text-xl font-medium mb-3 text-gray-600">Add New Film</h3>
+                <form action="/api/films/create" method="POST" class="space-y-4">
+                    <!-- Hidden admin credentials - REPLACE with actual session/token handling -->
+                    <input type="hidden" name="username" value="YOUR_ADMIN_USERNAME">
+                    <input type="hidden" name="password" value="YOUR_ADMIN_PASSWORD">
+
+                    <div>
+                        <label for="judul" class="block text-sm font-medium text-gray-600">Title</label>
+                        <input type="text" id="judul" name="judul" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="genre" class="block text-sm font-medium text-gray-600">Genre</label>
+                        <input type="text" id="genre" name="genre" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="sinopsis" class="block text-sm font-medium text-gray-600">Synopsis</label>
+                        <textarea id="sinopsis" name="sinopsis" rows="3" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                    </div>
+                    <div>
+                        <label for="durasi" class="block text-sm font-medium text-gray-600">Duration (HH:MM)</label>
+                        <input type="time" id="durasi" name="durasi" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="ruangan" class="block text-sm font-medium text-gray-600">Room</label>
+                        <input type="text" id="ruangan" name="ruangan" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="kapasitasRuangan" class="block text-sm font-medium text-gray-600">Room Capacity</label>
+                        <input type="number" id="kapasitasRuangan" name="kapasitasRuangan" required min="1" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="harga" class="block text-sm font-medium text-gray-600">Price</label>
+                        <input type="number" id="harga" name="harga" required min="0" step="1000" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                     <div>
+                        <label for="tiketTerjual" class="block text-sm font-medium text-gray-600">Tickets Sold (Initial)</label>
+                        <input type="number" id="tiketTerjual" name="tiketTerjual" required min="0" value="0" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-150">Add Film</button>
+                </form>
+            </div>
+            <hr class="my-6">
+            <!-- Placeholder for Displaying/Updating/Deleting Films -->
+            <div class="mb-6">
+                <h3 class="text-xl font-medium mb-3 text-gray-600">Existing Films</h3>
+                <p class="text-gray-500 italic">Film listing, update, and delete forms/buttons would go here. This would typically be populated dynamically using JavaScript.</p>
+                <!-- Example Update Film Form (simplified) -->
+                <form action="/api/films/update" method="POST" class="space-y-4 mt-4 p-4 border rounded-md">
+                    <h4 class="text-lg font-medium text-gray-600">Update Film</h4>
+                    <input type="hidden" name="username" value="YOUR_ADMIN_USERNAME">
+                    <input type="hidden" name="password" value="YOUR_ADMIN_PASSWORD">
+                    <div><label for="update-filmId" class="block text-sm">Film ID to Update</label><input type="text" id="update-filmId" name="filmId" required class="mt-1 w-full input"></div>
+                    <div><label for="update-ruangan" class="block text-sm">New Room</label><input type="text" id="update-ruangan" name="ruangan" required class="mt-1 w-full input"></div>
+                    <div><label for="update-kapasitasRuangan" class="block text-sm">New Capacity</label><input type="number" id="update-kapasitasRuangan" name="kapasitasRuangan" required class="mt-1 w-full input"></div>
+                    <div><label for="update-harga" class="block text-sm">New Price</label><input type="number" id="update-harga" name="harga" required class="mt-1 w-full input"></div>
+                    <button type="submit" class="btn-primary">Update Film</button>
+                </form>
+                 <!-- Example Delete Film Form (simplified) -->
+                <form action="/api/films/delete" method="POST" class="space-y-4 mt-4 p-4 border rounded-md">
+                    <h4 class="text-lg font-medium text-gray-600">Delete Film</h4>
+                    <input type="hidden" name="username" value="YOUR_ADMIN_USERNAME">
+                    <input type="hidden" name="password" value="YOUR_ADMIN_PASSWORD">
+                    <div><label for="delete-filmId" class="block text-sm">Film ID to Delete</label><input type="text" id="delete-filmId" name="filmId" required class="mt-1 w-full input"></div>
+                    <button type="submit" class="px-4 py-2 bg-red-600 text-white font-semibold rounded-md hover:bg-red-700 transition duration-150">Delete Film</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Schedule Management Section -->
+        <section id="schedule-management" class="mb-8 p-6 bg-white rounded-lg shadow">
+            <h2 class="text-2xl font-semibold mb-6 text-gray-700 border-b pb-2">Schedule Management</h2>
+            <!-- Add New Schedule Form -->
+            <div class="mb-6">
+                <h3 class="text-xl font-medium mb-3 text-gray-600">Add New Schedule</h3>
+                <form action="/api/scheduls/create" method="POST" class="space-y-4">
+                    <!-- Hidden admin credentials -->
+                    <input type="hidden" name="username" value="YOUR_ADMIN_USERNAME">
+                    <input type="hidden" name="password" value="YOUR_ADMIN_PASSWORD">
+
+                    <div>
+                        <label for="filmId" class="block text-sm font-medium text-gray-600">Film ID</label>
+                        <input type="text" id="filmId" name="filmId" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <!-- Note: Your JadwalController expects @RequestBody Film film. 
+                             A simple HTML form sends filmId as a parameter. 
+                             Backend might need adjustment or use JS to send a Film JSON object.
+                             For this example, sending filmId. -->
+                    </div>
+                    <div>
+                        <label for="jamTayang" class="block text-sm font-medium text-gray-600">Show Time (HH:MM)</label>
+                        <input type="time" id="jamTayang" name="jamTayang" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="tanggalTayang" class="block text-sm font-medium text-gray-600">Show Date</label>
+                        <input type="date" id="tanggalTayang" name="tanggalTayang" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-150">Add Schedule</button>
+                </form>
+            </div>
+            <hr class="my-6">
+            <!-- Placeholder for Displaying/Updating/Deleting Schedules -->
+            <div class="mb-6">
+                <h3 class="text-xl font-medium mb-3 text-gray-600">Existing Schedules</h3>
+                <p class="text-gray-500 italic">Schedule listing, update, and delete forms/buttons would go here. This would typically be populated dynamically.</p>
+                 <!-- Example Update Schedule Form (simplified) -->
+                <form action="/api/scheduls/update" method="POST" class="space-y-4 mt-4 p-4 border rounded-md">
+                    <h4 class="text-lg font-medium text-gray-600">Update Schedule</h4>
+                    <input type="hidden" name="username" value="YOUR_ADMIN_USERNAME">
+                    <input type="hidden" name="password" value="YOUR_ADMIN_PASSWORD">
+                    <div><label for="update-jadwalId" class="block text-sm">Schedule ID to Update</label><input type="text" id="update-jadwalId" name="jadwalId" required class="mt-1 w-full input"></div>
+                    <div><label for="update-jamTayang" class="block text-sm">New Show Time</label><input type="time" id="update-jamTayang" name="jamTayang" required class="mt-1 w-full input"></div>
+                    <div><label for="update-tanggalTayang" class="block text-sm">New Show Date</label><input type="date" id="update-tanggalTayang" name="tanggalTayang" required class="mt-1 w-full input"></div>
+                    <button type="submit" class="btn-primary">Update Schedule</button>
+                </form>
+                <!-- Example Delete Schedule Form (simplified) -->
+                <form action="/api/scheduls/delete" method="POST" class="space-y-4 mt-4 p-4 border rounded-md">
+                     <h4 class="text-lg font-medium text-gray-600">Delete Schedule</h4>
+                    <input type="hidden" name="username" value="YOUR_ADMIN_USERNAME">
+                    <input type="hidden" name="password" value="YOUR_ADMIN_PASSWORD">
+                    <div><label for="delete-jadwalId" class="block text-sm">Schedule ID to Delete</label><input type="text" id="delete-jadwalId" name="jadwalId" required class="mt-1 w-full input"></div>
+                    <button type="submit" class="px-4 py-2 bg-red-600 text-white font-semibold rounded-md hover:bg-red-700 transition duration-150">Delete Schedule</button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <footer class="text-center p-4 text-sm text-gray-600 bg-gray-200">
+        Movie Theater Management &copy; 2024
+    </footer>
+</body>
+</html>
