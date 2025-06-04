@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.mvc.model.Film;
 import com.project.mvc.model.Jadwal;
 import com.project.mvc.services.JadwalService;
 import com.project.mvc.services.LoginService;
@@ -28,12 +27,12 @@ public class JadwalController {
     public Jadwal createJadwal(
         @RequestParam String username,
         @RequestParam String password,
-        @RequestBody Film film,
+        @RequestBody String filmId,
         @RequestParam LocalTime jamTayang,
         @RequestParam LocalDate tanggalTayang
     ){
         loginService.loginAdmin(username, password);
-        return jadwalService.createJadwal(film, jamTayang, tanggalTayang);
+        return jadwalService.createJadwal(filmId, jamTayang, tanggalTayang);
     }
 
     @PostMapping("/update")
