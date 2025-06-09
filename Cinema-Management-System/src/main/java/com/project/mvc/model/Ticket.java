@@ -22,7 +22,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="ticket")
+@Table(name="tickets")
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -46,6 +46,9 @@ public class Ticket {
 
     @Column(nullable = false)
     private int kembalian;
+
+    @Column(nullable = false)
+    private int kuantitas;
 
     @Column(nullable = false)
     private LocalDateTime waktuPembelian;

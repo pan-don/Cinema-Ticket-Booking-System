@@ -61,12 +61,21 @@ public class FilmController {
         filmService.deleteFilm(filmId);
     }
 
-    @PostMapping("/showAll")
-    public List<Film> showAllFilm(
+    @PostMapping("/showAlluser")
+    public List<Film> showAllFilmUser(
         @RequestParam String username,
         @RequestParam String password
     ){
         loginService.loginUser(username, password);
+        return filmService.getAllFilm();
+    }
+
+        @PostMapping("/showAlladmin")
+    public List<Film> showAllFilmAdmin(
+        @RequestParam String username,
+        @RequestParam String password
+    ){
+        loginService.loginAdmin(username, password);
         return filmService.getAllFilm();
     }
 }

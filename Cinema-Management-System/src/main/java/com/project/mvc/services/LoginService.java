@@ -1,9 +1,13 @@
 package com.project.mvc.services;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import com.project.mvc.model.*;
-import com.project.mvc.repository.*;
+
+import com.project.mvc.model.Admin;
+import com.project.mvc.model.User;
+import com.project.mvc.repository.AdminRepository;
+import com.project.mvc.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

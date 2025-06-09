@@ -1,0 +1,83 @@
+/* Custom Styles based on the provided palette */
+:root {
+    --bg-dark-black: #121212;
+    --bg-dark-gray: #1E1E1E;
+    --btn-red: #E50914;
+    --text-white: #FFFFFF;
+    --text-gray: #B3B3B3;
+    --highlight-yellow: #FFD700;
+}
+
+body {
+    background-color: var(--bg-dark-black);
+    color: var(--text-white);
+    font-family: 'Inter', sans-serif;
+}
+
+.bg-dark-gray { background-color: var(--bg-dark-gray); }
+.bg-btn-red { background-color: var(--btn-red); }
+.text-gray { color: var(--text-gray); }
+.text-highlight { color: var(--highlight-yellow); }
+.border-gray { border-color: #333; }
+
+/* Custom scrollbar for horizontal movie list */
+.horizontal-scroll {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+.horizontal-scroll::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+}
+
+/* Custom dropdown styles */
+.custom-dropdown .dropdown-menu {
+    position: absolute;
+    background-color: var(--bg-dark-gray);
+    min-width: 100%;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-gray);
+}
+
+.dropdown-item {
+    color: var(--text-white);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: #333;
+}
+
+/* Modal styles */
+.modal {
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none; /* Hidden by default, JS will toggle */
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: var(--bg-dark-gray);
+}
+
+/* Page visibility */
+.page {
+    display: none;
+}
+.page.active {
+    display: block;
+}
+
+/* Fix for date/time input text color in dark mode */
+input[type="date"],
+input[type="time"] {
+    color-scheme: dark;
+}

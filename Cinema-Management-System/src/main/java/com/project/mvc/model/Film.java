@@ -18,13 +18,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="film")
+@Table(name="films")
 public class Film {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-
-    @Column(nullable = false, unique = true)
+    private String id;    @Column(nullable = false, unique = true)
     private String judul;
 
     @Column(nullable = false)

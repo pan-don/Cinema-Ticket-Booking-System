@@ -5,7 +5,6 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +26,7 @@ public class JadwalController {
     public Jadwal createJadwal(
         @RequestParam String username,
         @RequestParam String password,
-        @RequestBody String filmId,
+        @RequestParam String filmId,
         @RequestParam LocalTime jamTayang,
         @RequestParam LocalDate tanggalTayang
     ){

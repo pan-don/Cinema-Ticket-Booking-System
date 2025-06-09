@@ -1,4 +1,4 @@
-package com.kidaro.kael;
+package com.project.mvc;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

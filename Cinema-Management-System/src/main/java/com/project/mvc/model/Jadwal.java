@@ -23,7 +23,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="jadwal")
+@Table(name="schedules")
 public class Jadwal {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

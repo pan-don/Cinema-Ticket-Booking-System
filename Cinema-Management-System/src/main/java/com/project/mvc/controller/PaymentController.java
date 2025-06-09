@@ -26,11 +26,12 @@ public class PaymentController {
     public Ticket buyTicket(
         @RequestParam String username,
         @RequestParam String password,
-        @RequestBody String jadwalId,
-        @RequestParam int pembayaran
+        @RequestParam String jadwalId,
+        @RequestParam int pembayaran,
+        @RequestParam int kuantitas
     ) {
         User user = loginService.loginUser(username, password);
-        return paymentService.buyTicket(user, jadwalId, pembayaran);
+        return paymentService.buyTicket(user, jadwalId, pembayaran, kuantitas);
     }
 
     @PostMapping("/userTicket")

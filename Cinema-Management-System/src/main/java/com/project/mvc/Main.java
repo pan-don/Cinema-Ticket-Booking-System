@@ -10,6 +10,8 @@ import com.project.mvc.model.User;
 import com.project.mvc.repository.AdminRepository;
 import com.project.mvc.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
+
 @SpringBootApplication
 public class Main {
 
@@ -17,8 +19,13 @@ public class Main {
 		SpringApplication.run(Main.class, args);
 	}
 
-	@Bean
-	public CommandLineRunner initialDatabase(UserRepository userRepo, AdminRepository adminRepo){
+	@Bean 
+	@Transactional
+	public CommandLineRunner initialDatabase(
+		UserRepository userRepo, 
+		AdminRepository adminRepo
+		) {
+
 		return args -> {
 			if (userRepo.count() == 0) {
 				User user = new User();
