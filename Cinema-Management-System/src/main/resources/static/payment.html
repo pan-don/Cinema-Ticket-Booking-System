@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Payment</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Confirm Your Booking</h1>
+        
+        <!-- Booking Details (Static Example) -->
+        <div class="management-item" style="background-color: #1E1E1E; text-align: center;">
+            <h3>Dune: Part Two</h3>
+            <p>Date: 2024-10-26 | Time: 14:00 | Room: Studio 1</p>
+            <p style="font-size: 1.5rem; color: #FFD700;">Price: Rp 50,000 / ticket</p>
+        </div>
+
+        <form action="/api/payments/buy" method="POST" class="form-container">
+            <!-- Hidden fields for user and schedule details. In a real app, these would be populated dynamically. -->
+            <input type="hidden" name="username" value="user_username">
+            <input type="hidden" name="password" value="user_password">
+            <input type="hidden" name="jadwalId" value="jadwal_abc"> <!-- Example Schedule ID -->
+
+            <div class="input-group">
+                <label for="kuantitas">Quantity</label>
+                <input type="number" id="kuantitas" name="kuantitas" value="1" min="1" max="10" required>
+            </div>
+
+            <div class="input-group">
+                <label for="pembayaran">Total Payment</label>
+                <!-- NOTE: Total payment would typically be calculated with JS. Here, user must enter it. -->
+                <input type="number" id="pembayaran" name="pembayaran" placeholder="e.g., 50000 for 1 ticket" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Confirm Purchase</button>
+            <a href="user_dashboard.html" class="btn btn-secondary" style="margin-top: 1rem;">Cancel</a>
+        </form>
+    </div>
+
+</body>
+</html>

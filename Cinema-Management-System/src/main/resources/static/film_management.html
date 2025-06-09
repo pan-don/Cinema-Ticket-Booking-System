@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Movie Management</h1>
+
+        <!-- Create Movie Form -->
+        <section>
+            <h2>Add New Movie</h2>
+            <form action="/api/films/create" method="POST" class="form-container" style="max-width: none;">
+                <!-- Hidden admin credentials. In a real app, this would be handled by session authentication. -->
+                <input type="hidden" name="username" value="admin_username">
+                <input type="hidden" name="password" value="admin_password">
+                
+                <div class="input-group">
+                    <label for="judul">Title</label>
+                    <input type="text" id="judul" name="judul" required>
+                </div>
+                <div class="input-group">
+                    <label for="genre">Genre</label>
+                    <input type="text" id="genre" name="genre" required>
+                </div>
+                <div class="input-group">
+                    <label for="sinopsis">Synopsis</label>
+                    <textarea id="sinopsis" name="sinopsis" rows="4"></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="durasi">Duration (e.g., 02:30:00)</label>
+                    <input type="text" id="durasi" name="durasi" placeholder="HH:mm:ss" required>
+                </div>
+                <div class="input-group">
+                    <label for="ruangan">Room</label>
+                    <input type="text" id="ruangan" name="ruangan" required>
+                </div>
+                <div class="input-group">
+                    <label for="kapasitasRuangan">Room Capacity</label>
+                    <input type="number" id="kapasitasRuangan" name="kapasitasRuangan" required>
+                </div>
+                 <div class="input-group">
+                    <label for="harga">Price</label>
+                    <input type="number" id="harga" name="harga" required>
+                </div>
+                <input type="hidden" name="tiketTerjual" value="0">
+                
+                <button type="submit" class="btn btn-primary">Create Movie</button>
+            </form>
+        </section>
+
+        <hr style="border-color: #333; margin: 3rem 0;">
+
+        <!-- Existing Movies List -->
+        <section>
+            <h2>Existing Movies</h2>
+            <div class="management-grid">
+                <!-- Example Movie 1 for Management -->
+                <div class="management-item">
+                    <h3>Dune: Part Two (ID: film_123)</h3>
+                    <form action="/api/films/update" method="POST">
+                        <input type="hidden" name="username" value="admin_username">
+                        <input type="hidden" name="password" value="admin_password">
+                        <input type="hidden" name="filmId" value="film_123">
+                        <div class="input-group">
+                            <label>Room</label>
+                            <input type="text" name="ruangan" value="Studio 1">
+                        </div>
+                        <div class="input-group">
+                            <label>Capacity</label>
+                            <input type="number" name="kapasitasRuangan" value="150">
+                        </div>
+                        <div class="input-group">
+                            <label>Price</label>
+                            <input type="number" name="harga" value="50000">
+                        </div>
+                        <button type="submit" class="btn btn-secondary" style="margin-top: 1rem;">Update</button>
+                    </form>
+                    <form action="/api/films/delete" method="POST" style="margin-top: 1rem;">
+                        <input type="hidden" name="username" value="admin_username">
+                        <input type="hidden" name="password" value="admin_password">
+                        <input type="hidden" name="filmId" value="film_123">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+                <!-- Add more managed movies here -->
+            </div>
+        </section>
+        <div style="text-align: center; margin-top: 2rem;">
+             <a href="admin_dashboard.html" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+
+</body>
+</html>

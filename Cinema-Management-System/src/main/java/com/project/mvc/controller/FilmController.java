@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -80,12 +81,8 @@ public class FilmController {
         return ResponseEntity.ok(films);
     }
 
-    @PostMapping("/showAlladmin")
-    public ResponseEntity<List<Film>> showAllFilmAdmin(
-        @RequestParam String username,
-        @RequestParam String password
-    ){
-        loginService.loginAdmin(username, password);
+    @GetMapping("/all")
+    public ResponseEntity<List<Film>> getAllFilms() {
         List<Film> films = filmService.getAllFilm();
         return ResponseEntity.ok(films);
     }

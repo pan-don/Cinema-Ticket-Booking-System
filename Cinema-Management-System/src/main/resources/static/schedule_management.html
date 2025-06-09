@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Schedule Management</h1>
+
+        <!-- Create Schedule Form -->
+        <section>
+            <h2>Add New Schedule</h2>
+            <form action="/api/scheduls/create" method="POST" class="form-container">
+                <input type="hidden" name="username" value="admin_username">
+                <input type="hidden" name="password" value="admin_password">
+                
+                <div class="input-group">
+                    <label for="filmId">Film ID</label>
+                    <input type="text" id="filmId" name="filmId" placeholder="Enter the ID of the film" required>
+                </div>
+                <div class="input-group">
+                    <label for="tanggalTayang">Show Date</label>
+                    <input type="date" id="tanggalTayang" name="tanggalTayang" required>
+                </div>
+                 <div class="input-group">
+                    <label for="jamTayang">Show Time</label>
+                    <input type="time" id="jamTayang" name="jamTayang" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Create Schedule</button>
+            </form>
+        </section>
+
+        <hr style="border-color: #333; margin: 3rem 0;">
+
+        <!-- Existing Schedules List -->
+        <section>
+            <h2>Existing Schedules</h2>
+            <div class="management-grid">
+                <!-- Example Schedule 1 for Management -->
+                <div class="management-item">
+                    <h3>Dune @ 14:00 (ID: jadwal_abc)</h3>
+                    <form action="/api/scheduls/update" method="POST">
+                        <input type="hidden" name="username" value="admin_username">
+                        <input type="hidden" name="password" value="admin_password">
+                        <input type="hidden" name="jadwalId" value="jadwal_abc">
+                        <div class="input-group">
+                            <label>New Date</label>
+                            <input type="date" name="tanggalTayang" value="2024-10-27">
+                        </div>
+                        <div class="input-group">
+                            <label>New Time</label>
+                            <input type="time" name="jamTayang" value="14:30">
+                        </div>
+                        <button type="submit" class="btn btn-secondary" style="margin-top: 1rem;">Update</button>
+                    </form>
+                    <form action="/api/scheduls/delete" method="POST" style="margin-top: 1rem;">
+                        <input type="hidden" name="username" value="admin_username">
+                        <input type="hidden" name="password" value="admin_password">
+                        <input type="hidden" name="jadwalId" value="jadwal_abc">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+                <!-- Add more managed schedules here -->
+            </div>
+        </section>
+        <div style="text-align: center; margin-top: 2rem;">
+             <a href="admin_dashboard.html" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+
+</body>
+</html>

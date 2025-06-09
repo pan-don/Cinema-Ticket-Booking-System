@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cinema XXI - Register</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>Cinema XXI</h1>
+        
+        <form id="registerForm" class="form-container">
+            <h2>Create a New Account</h2>
+            
+            <div class="input-group">
+                <label for="username">New Username</label>
+                <input type="text" id="username" name="username" placeholder="Choose a username" required />
+            </div>
+            
+            <div class="input-group">
+                <label for="password">New Password</label>
+                <input type="password" id="password" name="password" placeholder="Create a password" required />
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Register</button>
+
+            <div id="registerMessage"></div>
+            
+            <div class="link-container">
+                <p>Already have an account? <a href="index.html">Login here</a></p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const username = this.username.value.trim();
+            const password = this.password.value;
+            const messageDiv = document.getElementById('registerMessage');
+            const registerButton = this.querySelector('button[type="submit"]');
+
+            messageDiv.style.display = 'none';
+            messageDiv.textContent = '';
+            registerButton.disabled = true;
+            registerButton.textContent = 'Registering...';
+
+            try {
+                // Membuat payload URL encoded
+                const formData = new URLSearchParams();
+                formData.append('username', username);
+                formData.append('password', password);
+
+                const response = await fetch('/api/Authenticator/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData.toString()
+                });
+
+                if (response.ok) {
+                    messageDiv.style.color = 'green';
+                    messageDiv.textContent = 'Registration successful! Redirecting to login...';
+
+                    registerButton.textContent = 'Success!';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                } else {
+                    const errorData = await response.json().catch(() => null);
+                    messageDiv.style.color = 'red';
+                    messageDiv.textContent = errorData?.message || 'Registration failed. Please try again.';
+                    registerButton.disabled = false;
+                    registerButton.textContent = 'Register';
+                }
+                messageDiv.style.display = 'block';
+            } catch (err) {
+                console.error('Register error:', err);
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = 'Network error. Please try again later.';
+                messageDiv.style.display = 'block';
+                registerButton.disabled = false;
+                registerButton.textContent = 'Register';
+            }
+        });
+    </script>
+</body>
+</html>

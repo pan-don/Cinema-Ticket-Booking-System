@@ -1,259 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cinema Management System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cinema XXI - Login</title>
+    <link rel="stylesheet" href="styles.css" />
 </head>
-<body class="antialiased">
+<body>
+    <div class="container">
+        <h1>Cinema XXI</h1>
 
-    <!-- App Header -->
-    <header id="app-header" class="p-4 bg-dark-gray shadow-md flex justify-between items-center hidden">
-        <h1 class="text-2xl font-bold text-btn-red tracking-wider">CINEMAFLIX</h1>
-        <button id="logout-btn" class="bg-btn-red hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">
-            Logout
-        </button>
-    </header>
-
-    <main class="p-4 md:p-8">
-        <!-- LOGIN PAGE -->
-        <section id="login-page" class="page active">
-            <div class="flex flex-col items-center justify-center min-h-screen">
-                <div class="w-full max-w-md p-8 space-y-6 bg-dark-gray rounded-lg shadow-lg">
-                    <h2 class="text-3xl font-bold text-center text-white">Login</h2>
-                    <form id="login-form" class="space-y-6">
-                        <div>
-                            <label for="login-username" class="text-sm font-medium text-gray">GAAAAA THIS IS KARL</label>
-                            <input id="login-username" type="text" placeholder="Enter your username" required class="w-full px-4 py-2 mt-2 text-white bg-[#333] border border-gray rounded-md focus:outline-none focus:ring-2 focus:ring-btn-red" value="user">
-                        </div>
-                        <div>
-                            <label for="login-password" class="text-sm font-medium text-gray">Password</label>
-                            <input id="login-password" type="password" placeholder="Enter your password" required class="w-full px-4 py-2 mt-2 text-white bg-[#333] border border-gray rounded-md focus:outline-none focus:ring-2 focus:ring-btn-red" value="password">
-                        </div>
-                        <div class="relative custom-dropdown">
-                            <label for="login-role" class="text-sm font-medium text-gray">Role</label>
-                            <button type="button" id="role-dropdown-btn" class="w-full text-left px-4 py-2 mt-2 text-white bg-[#333] border border-gray rounded-md flex justify-between items-center">
-                                <span id="selected-role">USER</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="dropdown-menu mt-1 hidden">
-                                <a href="#" class="dropdown-item" data-value="USER">USER</a>
-                                <a href="#" class="dropdown-item" data-value="ADMIN">ADMIN</a>
-                            </div>
-                        </div>
-                        <button type="submit" class="w-full py-3 font-semibold text-white transition duration-300 rounded-md bg-btn-red hover:bg-red-700">
-                            Login
-                        </button>
-                    </form>
-                    <p class="text-sm text-center text-gray">
-                        Don't have an account? <a href="#" id="show-register-link" class="font-medium text-btn-red hover:underline">Register now</a>
-                    </p>
-                </div>
+        <form id="loginForm" class="form-container">
+            <h2>Login to Your Account</h2>
+            
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required />
             </div>
-        </section>
-
-        <!-- REGISTER PAGE -->
-        <section id="register-page" class="page">
-             <div class="flex flex-col items-center justify-center min-h-screen">
-                <div class="w-full max-w-md p-8 space-y-6 bg-dark-gray rounded-lg shadow-lg">
-                    <h2 class="text-3xl font-bold text-center text-white">Register</h2>
-                    <form id="register-form" class="space-y-6">
-                        <div>
-                            <label for="register-username" class="text-sm font-medium text-gray">Username</label>
-                            <input id="register-username" type="text" placeholder="Choose a username" required class="w-full px-4 py-2 mt-2 text-white bg-[#333] border border-gray rounded-md focus:outline-none focus:ring-2 focus:ring-btn-red">
-                        </div>
-                        <div>
-                            <label for="register-password" class="text-sm font-medium text-gray">Password</label>
-                            <input id="register-password" type="password" placeholder="Create a password" required class="w-full px-4 py-2 mt-2 text-white bg-[#333] border border-gray rounded-md focus:outline-none focus:ring-2 focus:ring-btn-red">
-                        </div>
-                        <button type="submit" class="w-full py-3 font-semibold text-white transition duration-300 rounded-md bg-btn-red hover:bg-red-700">
-                            Register
-                        </button>
-                    </form>
-                    <p class="text-sm text-center text-gray">
-                        Already have an account? <a href="#" id="show-login-link" class="font-medium text-btn-red hover:underline">Login here</a>
-                    </p>
-                </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required />
             </div>
-        </section>
-
-        <!-- USER DASHBOARD -->
-        <section id="user-page" class="page">
-            <h2 class="text-3xl font-bold mb-6 text-white">Now Showing</h2>
-            <div id="movie-list" class="flex pb-4 -mx-4 overflow-x-auto horizontal-scroll">
-                <!-- Movie cards will be injected here by JavaScript -->
-                 <div class="text-center w-full text-gray">Loading movies...</div>
+            
+            <div class="input-group">
+                <label for="role">Role</label>
+                <select id="role" name="role">
+                    <option value="USER">User</option>
+                    <option value="ADMIN">Admin</option>
+                </select>
             </div>
-             <div class="mt-8 text-center">
-                <button id="view-history-btn" class="bg-dark-gray border border-btn-red text-white font-bold py-3 px-6 rounded-md hover:bg-btn-red transition duration-300">
-                    Check My Purchase History
-                </button>
+            
+            <button type="submit" class="btn btn-primary">Login</button>
+            
+            <div id="loginError"></div>
+
+            <div class="link-container">
+                <p>Don't have an account? <a href="register.html">Register here</a></p>
             </div>
-        </section>
-
-        <!-- ADMIN DASHBOARD -->
-        <section id="admin-page" class="page">
-             <h2 class="text-3xl font-bold mb-8 text-white text-center">Admin Dashboard</h2>
-             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <div id="manage-movies-btn" class="bg-dark-gray p-8 rounded-lg shadow-lg text-center cursor-pointer hover:bg-[#333] transition duration-300">
-                    <i class="fas fa-film text-6xl text-btn-red mb-4"></i>
-                    <h3 class="text-2xl font-bold text-white">Manage Movies</h3>
-                    <p class="text-gray mt-2">Add, update, or delete movie listings.</p>
-                </div>
-                 <div id="manage-schedules-btn" class="bg-dark-gray p-8 rounded-lg shadow-lg text-center cursor-pointer hover:bg-[#333] transition duration-300">
-                    <i class="fas fa-calendar-alt text-6xl text-btn-red mb-4"></i>
-                    <h3 class="text-2xl font-bold text-white">Manage Schedules</h3>
-                    <p class="text-gray mt-2">Create, update, or delete movie schedules.</p>
-                </div>
-             </div>
-        </section>
-
-        <!-- ADMIN MOVIE MANAGEMENT -->
-        <section id="admin-movie-management" class="page">
-             <button class="back-to-admin-btn mb-6 text-gray hover:text-white"><i class="fas fa-arrow-left mr-2"></i>Back to Dashboard</button>
-             <h2 class="text-3xl font-bold mb-6 text-white">Movie Management</h2>
-             
-             <div class="bg-dark-gray p-6 rounded-lg mb-8">
-                 <h3 id="movie-form-title" class="text-2xl font-bold mb-4 text-white">Add New Movie</h3>
-                 <form id="movie-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                     <input type="hidden" id="movie-id">
-                     <div>
-                         <label for="movie-judul" class="text-sm text-gray">Title</label>
-                         <input type="text" id="movie-judul" required placeholder="e.g., The Matrix" class="w-full mt-1 p-2 bg-[#333] rounded-md border-gray border">
-                     </div>
-                     <div>
-                         <label for="movie-genre" class="text-sm text-gray">Genre</label>
-                         <input type="text" id="movie-genre" required placeholder="e.g., Sci-Fi" class="w-full mt-1 p-2 bg-[#333] rounded-md border-gray border">
-                     </div>
-                      <div class="md:col-span-2">
-                         <label for="movie-sinopsis" class="text-sm text-gray">Synopsis</label>
-                         <textarea id="movie-sinopsis" rows="3" required placeholder="Movie description..." class="w-full mt-1 p-2 bg-[#333] rounded-md border-gray border"></textarea>
-                     </div>
-                     <div>
-                         <label for="movie-durasi" class="text-sm text-gray">Duration (HH:MM)</label>
-                         <input type="time" id="movie-durasi" required class="w-full mt-1 p-2 bg-[#333] rounded-md border-gray border text-white">
-                     </div>
-                     <div>
-                         <label for="movie-ruangan" class="text-sm text-gray">Room</label>
-                         <input type="text" id="movie-ruangan" required placeholder="e.g., Hall 1" class="w-full mt-1 p-2 bg-[#333] rounded-md border-gray border">
-                     </div>
-                     <div>
-                         <label for="movie-kapasitas" class="text-sm text-gray">Room Capacity</label>
-                         <input type="number" id="movie-kapasitas" required placeholder="100" class="w-full mt-1 p-2 bg-[#333] rounded-md border-gray border">
-                     </div>
-                     <div>
-                         <label for="movie-harga" class="text-sm text-gray">Price</label>
-                         <input type="number" id="movie-harga" required placeholder="50000" class="w-full mt-1 p-2 bg-[#333] rounded-md border-gray border">
-                     </div>
-                     <div class="md:col-span-2 flex items-end space-x-4">
-                         <button type="submit" class="bg-btn-red hover:bg-red-700 text-white font-bold py-2 px-6 rounded-md transition duration-300">Save Movie</button>
-                         <button type="button" id="clear-movie-form-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Clear</button>
-                     </div>
-                 </form>
-             </div>
-
-             <div class="bg-dark-gray p-6 rounded-lg overflow-x-auto">
-                <h3 class="text-2xl font-bold mb-4 text-white">Existing Movies</h3>
-                <table class="min-w-full text-left">
-                    <thead>
-                        <tr class="border-b border-gray">
-                            <th class="p-2">Title</th>
-                            <th class="p-2">Genre</th>
-                            <th class="p-2">Room</th>
-                            <th class="p-2">Price</th>
-                            <th class="p-2">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="existing-movies-list">
-                        <!-- Admin movie list rows will be injected here -->
-                    </tbody>
-                </table>
-             </div>
-        </section>
-
-        <!-- ADMIN SCHEDULE MANAGEMENT -->
-        <section id="admin-schedule-management" class="page">
-             <button class="back-to-admin-btn mb-6 text-gray hover:text-white"><i class="fas fa-arrow-left mr-2"></i>Back to Dashboard</button>
-             <h2 class="text-3xl font-bold mb-6 text-white">Schedule Management</h2>
-             
-             <div class="bg-dark-gray p-6 rounded-lg mb-8">
-                 <h3 id="schedule-form-title" class="text-2xl font-bold mb-4 text-white">Add New Schedule</h3>
-                 <form id="schedule-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                     <input type="hidden" id="schedule-id">
-                     <div>
-                         <label for="schedule-filmId" class="text-sm text-gray">Select Movie</label>
-                         <select id="schedule-filmId" required class="w-full mt-1 p-2 bg-[#333] rounded-md border-gray border text-white">
-                         </select>
-                     </div>
-                     <div>
-                         <label for="schedule-tanggalTayang" class="text-sm text-gray">Show Date</label>
-                         <input type="date" id="schedule-tanggalTayang" required class="w-full mt-1 p-2 bg-[#333] rounded-md border-gray border text-white">
-                     </div>
-                     <div>
-                         <label for="schedule-jamTayang" class="text-sm text-gray">Show Time</label>
-                         <input type="time" id="schedule-jamTayang" required class="w-full mt-1 p-2 bg-[#333] rounded-md border-gray border text-white">
-                     </div>
-                     <div class="md:col-span-3 flex items-end space-x-4">
-                         <button type="submit" class="bg-btn-red hover:bg-red-700 text-white font-bold py-2 px-6 rounded-md transition duration-300">Save Schedule</button>
-                         <button type="button" id="clear-schedule-form-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Clear</button>
-                     </div>
-                 </form>
-             </div>
-
-             <div class="bg-dark-gray p-6 rounded-lg overflow-x-auto">
-                <h3 class="text-2xl font-bold mb-4 text-white">Existing Schedules</h3>
-                <table class="min-w-full text-left">
-                    <thead>
-                        <tr class="border-b border-gray">
-                            <th class="p-2">Movie Title</th>
-                            <th class="p-2">Date</th>
-                            <th class="p-2">Time</th>
-                            <th class="p-2">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="existing-schedules-list">
-                        <!-- Admin schedule list rows will be injected here -->
-                    </tbody>
-                </table>
-             </div>
-        </section>
-
-    </main>
-    
-    <!-- MODALS -->
-    <div id="movie-details-modal" class="modal fixed inset-0 z-50 items-center justify-center hidden">
-        <div id="movie-details-content" class="modal-content w-full max-w-2xl p-6 rounded-lg shadow-lg m-4"></div>
-    </div>
-    
-    <div id="purchase-history-modal" class="modal fixed inset-0 z-50 items-center justify-center hidden">
-        <div class="modal-content w-full max-w-3xl p-6 rounded-lg shadow-lg m-4">
-             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-white">My Purchase History</h2>
-                <button class="close-modal-btn text-2xl text-gray hover:text-white">&times;</button>
-            </div>
-            <div id="purchase-history-content" class="max-h-[60vh] overflow-y-auto"></div>
-        </div>
+        </form>
     </div>
 
-    <div id="alert-modal" class="modal fixed inset-0 z-50 items-center justify-center hidden">
-         <div class="modal-content w-full max-w-sm p-6 rounded-lg shadow-lg m-4 text-center">
-            <p id="alert-message" class="text-white mb-4">Message goes here.</p>
-            <button id="alert-ok-btn" class="bg-btn-red hover:bg-red-700 text-white font-bold py-2 px-6 rounded-md transition duration-300">OK</button>
-         </div>
-    </div>
-
-    <script src="api.js"></script>
-    <script src="script.js"></script>
     <script>
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
 
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+            const errorDiv = document.getElementById('loginError');
+            const loginButton = this.querySelector('button[type="submit"]');
 
+            errorDiv.style.display = 'none';
+            errorDiv.textContent = '';
+            loginButton.disabled = true;
+            loginButton.textContent = 'Logging in...';
 
+            const endpoint = role === 'ADMIN'
+                ? '/api/Authenticator/login/admin'
+                : '/api/Authenticator/login/user';
+
+            try {
+                // CHANGED: prepare data as application/x-www-form-urlencoded
+                const formData = new URLSearchParams(); // CHANGED
+                formData.append('username', username);  // CHANGED
+                formData.append('password', password);  // CHANGED
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded' // CHANGED
+                    },
+                    body: formData.toString() // CHANGED
+                });
+
+                // OLD:
+                // const response = await fetch(endpoint, {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({ username, password })
+                // });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    sessionStorage.setItem('user', JSON.stringify(user));
+
+                    loginButton.textContent = 'Success!';
+                    loginButton.classList.add('btn-success');
+                    loginButton.classList.remove('btn-primary');
+
+                    setTimeout(() => {
+                        if (role === 'ADMIN') {
+                            window.location.href = 'admin_dashboard.html';
+                        } else {
+                            window.location.href = 'user_dashboard.html';
+                        }
+                    }, 1000);
+                } else {
+                    const errorData = await response.json().catch(() => null);
+                    errorDiv.textContent = errorData?.message || 'Invalid credentials or server error.';
+                    errorDiv.style.display = 'block';
+                    loginButton.disabled = false;
+                    loginButton.textContent = 'Login';
+                    loginButton.classList.remove('btn-success');
+                    loginButton.classList.add('btn-primary');
+                }
+            } catch (err) {
+                console.error('Login error:', err);
+                errorDiv.textContent = 'Network issue. Please try again later.';
+                errorDiv.style.display = 'block';
+                loginButton.disabled = false;
+                loginButton.textContent = 'Login';
+                loginButton.classList.remove('btn-success');
+                loginButton.classList.add('btn-primary');
+            }
+        });
     </script>
 </body>
 </html>
