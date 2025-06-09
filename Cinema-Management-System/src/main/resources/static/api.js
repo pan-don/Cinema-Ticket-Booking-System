@@ -3,7 +3,7 @@
  * It abstracts the fetch logic, making the main script.js cleaner.
  */
 
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = 'http://localhost:8080/api';
 
 /**
  * A helper function to handle fetch responses.
@@ -30,6 +30,7 @@ async function handleResponse(response) {
  * @param {object} data - The data object to be sent.
  * @returns {URLSearchParams} - The URL-encoded data.
  */
+
 function createBody(data) {
     const body = new URLSearchParams();
     for (const key in data) {

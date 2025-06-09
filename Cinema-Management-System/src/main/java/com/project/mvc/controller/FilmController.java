@@ -3,6 +3,8 @@ package com.project.mvc.controller;
 import java.time.LocalTime;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,7 +24,7 @@ public class FilmController {
     private final FilmService filmService;
 
     @PostMapping("/create")
-    public Film createFilm(
+    public ResponseEntity<Film> createFilm(
         @RequestParam String username,
         @RequestParam String password,
         @RequestParam String judul,
@@ -34,12 +36,19 @@ public class FilmController {
         @RequestParam int harga,
         @RequestParam int tiketTerjual
     ) {
+        // Verify admin credentials
         loginService.loginAdmin(username, password);
-        return filmService.createFilm(judul, genre, sinopsis, durasi, ruangan, kapasitasRuangan, harga, tiketTerjual);
+        
+        // Create the film
+        Film createdFilm = filmService.createFilm(judul, genre, sinopsis, durasi, ruangan, 
+            kapasitasRuangan, harga, tiketTerjual);
+            
+        // Return with 201 Created status
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdFilm);
     }
 
     @PostMapping("/update")
-    public Film updateFilm(
+    public ResponseEntity<Film> updateFilm(
         @RequestParam String username,
         @RequestParam String password,
         @RequestParam String filmId,
@@ -48,34 +57,36 @@ public class FilmController {
         @RequestParam int harga
     ) {
         loginService.loginAdmin(username, password);
-        return filmService.updateFilm(filmId, ruangan, kapasitasRuangan, harga);
+        Film updatedFilm = filmService.updateFilm(filmId, ruangan, kapasitasRuangan, harga);
+        return ResponseEntity.ok(updatedFilm);
     }
 
     @PostMapping("/delete")
-    public void deleteFilm(
+    public ResponseEntity<Void> deleteFilm(
         @RequestParam String username,
         @RequestParam String password,
         @RequestParam String filmId
     ) {
         loginService.loginAdmin(username, password);
         filmService.deleteFilm(filmId);
-    }
-
-    @PostMapping("/showAlluser")
-    public List<Film> showAllFilmUser(
+        return ResponseEntity.noContent().build();
+    }    @PostMapping("/showAlluser")
+    public ResponseEntity<List<Film>> showAllFilmUser(
         @RequestParam String username,
         @RequestParam String password
     ){
         loginService.loginUser(username, password);
-        return filmService.getAllFilm();
+        List<Film> films = filmService.getAllFilm();
+        return ResponseEntity.ok(films);
     }
 
-        @PostMapping("/showAlladmin")
-    public List<Film> showAllFilmAdmin(
+    @PostMapping("/showAlladmin")
+    public ResponseEntity<List<Film>> showAllFilmAdmin(
         @RequestParam String username,
         @RequestParam String password
     ){
         loginService.loginAdmin(username, password);
-        return filmService.getAllFilm();
+        List<Film> films = filmService.getAllFilm();
+        return ResponseEntity.ok(films);
     }
 }

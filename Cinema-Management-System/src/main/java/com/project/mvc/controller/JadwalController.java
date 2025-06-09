@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,14 +56,14 @@ public class JadwalController {
     ) {
         loginService.loginAdmin(username, password);
         jadwalService.deleteJadwal(jadwalId);
-    }
-
-    @PostMapping("/showAll")
-    public List<Jadwal> showAllJadwal(
+    }    
+    @GetMapping("/showAll")
+    public ResponseEntity<List<Jadwal>> showAllJadwal(
         @RequestParam String username,
         @RequestParam String password
     ) {
-        loginService.loginUser(username, password);
-        return jadwalService.getAllJadwal();
+        loginService.loginAdmin(username, password); // Changed to loginAdmin since this is for admin access
+        List<Jadwal> jadwals = jadwalService.getAllJadwal();
+        return ResponseEntity.ok(jadwals);
     }
 }
