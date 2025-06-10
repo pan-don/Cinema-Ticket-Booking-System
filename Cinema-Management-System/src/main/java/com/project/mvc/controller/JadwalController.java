@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ public class JadwalController {
     private final JadwalService jadwalService;
 
     @PostMapping("/create")
-    public Jadwal createJadwal(
+    public ResponseEntity<Jadwal> createJadwal(
         @RequestParam String username,
         @RequestParam String password,
         @RequestParam String filmId,
@@ -33,11 +34,12 @@ public class JadwalController {
         @RequestParam LocalDate tanggalTayang
     ){
         loginService.loginAdmin(username, password);
-        return jadwalService.createJadwal(filmId, jamTayang, tanggalTayang);
+        Jadwal createdJadwal = jadwalService.createJadwal(filmId, jamTayang, tanggalTayang); 
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdJadwal);
     }
 
     @PostMapping("/update")
-    public Jadwal updateJadwal(
+    public ResponseEntity<Jadwal> updateJadwal(
         @RequestParam String username,
         @RequestParam String password,
         @RequestParam String jadwalId,
@@ -45,24 +47,23 @@ public class JadwalController {
         @RequestParam LocalDate tanggalTayang
     ) {
         loginService.loginAdmin(username, password);
-        return jadwalService.updateJadwal(jadwalId, jamTayang, tanggalTayang);
+        Jadwal updatedJadwal =  jadwalService.updateJadwal(jadwalId, jamTayang, tanggalTayang);
+        return ResponseEntity.ok(updatedJadwal);
     }
-
+ 
     @PostMapping("/delete")
-    public void deleteJadwal(
+    public ResponseEntity<Void> deleteJadwal(
         @RequestParam String username,
         @RequestParam String password,
         @RequestParam String jadwalId
     ) {
         loginService.loginAdmin(username, password);
         jadwalService.deleteJadwal(jadwalId);
-    }    
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/showAll")
-    public ResponseEntity<List<Jadwal>> showAllJadwal(
-        @RequestParam String username,
-        @RequestParam String password
-    ) {
-        loginService.loginAdmin(username, password); // Changed to loginAdmin since this is for admin access
+    public ResponseEntity<List<Jadwal>> showAllJadwal() {
         List<Jadwal> jadwals = jadwalService.getAllJadwal();
         return ResponseEntity.ok(jadwals);
     }

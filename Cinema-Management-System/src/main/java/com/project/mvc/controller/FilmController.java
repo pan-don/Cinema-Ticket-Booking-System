@@ -71,7 +71,9 @@ public class FilmController {
         loginService.loginAdmin(username, password);
         filmService.deleteFilm(filmId);
         return ResponseEntity.noContent().build();
-    }    @PostMapping("/showAlluser")
+    }    
+    
+    @PostMapping("/showAlluser")
     public ResponseEntity<List<Film>> showAllFilmUser(
         @RequestParam String username,
         @RequestParam String password

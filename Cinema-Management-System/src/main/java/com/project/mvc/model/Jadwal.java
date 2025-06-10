@@ -3,8 +3,6 @@ package com.project.mvc.model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,11 +25,10 @@ import lombok.Setter;
 public class Jadwal {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-
+    private String id;    
+    
     @ManyToOne(optional = false)
     @JoinColumn(name = "film_id", nullable = false)
-    @JsonBackReference
     private Film film;
 
     @Column(nullable = false)

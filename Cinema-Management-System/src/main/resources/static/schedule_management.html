@@ -5,6 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schedule Management</title>
     <link rel="stylesheet" href="styles.css">
+
+<style>
+.popup { 
+    display: none; 
+    position: fixed; 
+    top: 20%; 
+    left: 50%; 
+    transform: translate(-50%, 0); 
+    background-color: var(--background-color, #1E1E1E) !important;
+    padding: 2rem; 
+    box-shadow: 0 0 10px rgba(0,0,0,0.3); 
+    z-index: 1000;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+.popup.active { display: block; }
+.popup-buttons { margin-top: 1rem; text-align: right; gap: 0.5rem; display: flex; justify-content: flex-end; }
+.popup-header { 
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #ddd;
+}
+.text-center { text-align: center; }
+</style>
+
 </head>
 <body>  
 
@@ -14,7 +41,7 @@
         <!-- Create Schedule Form -->
         <section>
             <h2>Add New Schedule</h2>
-            <form id="addScheduleForm" class="form-container">
+            <form id="addScheduleForm" class="form-container" onsubmit="event.preventDefault(); createSchedule();">
                 <div class="input-group">
                     <label for="filmId">Film</label>
                     <select id="filmId" name="filmId" required>
@@ -27,7 +54,7 @@
                 </div>
                 <div class="input-group">
                     <label for="jamTayang">Show Time</label>
-                    <input type="time" id="jamTayang" name="jamTayang" required>
+                    <input type="time" id="jamTayang" name="jamTayang" step="1" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Create Schedule</button>
             </form>
@@ -39,13 +66,6 @@
         <section>
             <h2>Existing Schedules</h2>
             <div id="scheduleList" class="management-grid">
-                <!-- Example Schedule for Management -->
-                <div class="management-item">
-                    <h3>Film Title @ 14:00 (ID: schedule_abc)</h3>
-                    <button class="btn btn-secondary" onclick="viewScheduleDetails('schedule_abc')">View Details</button>
-                    <button class="btn btn-secondary" onclick="openUpdatePopup('schedule_abc')">Update</button>
-                    <button class="btn btn-danger" onclick="openDeletePopup('schedule_abc')">Delete</button>
-                </div>
                 <!-- Add more managed schedules here -->
             </div>
         </section>
@@ -75,11 +95,14 @@
                 <label for="updateJamTayang">New Show Time</label>
                 <input type="time" id="updateJamTayang" name="jamTayang" required>
             </div>
-            <button type="submit" class="btn btn-primary">Update Schedule</button>
+            <div class="popup-buttons">
+                <button type="button" class="btn btn-secondary" onclick="closePopup('updateSchedulePopup')">Cancel</button>
+                <button type="submit" class="btn btn-primary" onclick="event.preventDefault(); updateSchedule()">Update Schedule</button>
+            </div>
         </form>
     </div>
 
-    <!-- Popup for Delete Confirmation -->
+        <!-- Popup for Delete Confirmation -->
     <div id="deleteSchedulePopup" class="popup">
         <div class="popup-header">Delete Schedule</div>
         <p class="text-center">Are you sure you want to delete this schedule?</p>
@@ -89,5 +112,231 @@
         </div>
     </div>
 
+    <script>
+        const ADMIN_USERNAME = 'admin';
+        const ADMIN_PASSWORD = 'admin123';
+
+        async function fetchFilms() {
+            try {
+                const response = await fetch('/api/films/all');
+                const films = await response.json();
+                const filmDropdown = document.getElementById('filmId');
+                filmDropdown.innerHTML = ''; // Clear existing options
+                films.forEach(film => {
+                    const option = document.createElement('option');
+                    option.value = film.id;
+                    option.textContent = film.judul;
+                    filmDropdown.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching films:', error);
+            }
+        }
+
+        async function fetchSchedules() {
+            try {
+                const formData = new URLSearchParams();
+                formData.append('username', ADMIN_USERNAME);
+                formData.append('password', ADMIN_PASSWORD);
+
+                const response = await fetch('/api/scheduls/showAll', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+                });
+                const schedules = await response.json();
+                renderSchedules(schedules);
+            } catch (error) {
+                console.error('Error fetching schedules:', error);
+            }
+        }
+
+        function renderSchedules(schedules) {
+            const scheduleList = document.getElementById('scheduleList');
+            scheduleList.innerHTML = '';
+            if (!Array.isArray(schedules)) {
+                console.error('Expected schedules to be an array, got:', schedules);
+                return;
+            }
+            console.log('Schedules:', schedules); // Debug log
+            schedules.forEach(schedule => {
+                console.log('Schedule:', schedule); // Debug individual schedule
+                const scheduleItem = document.createElement('div');
+                scheduleItem.className = 'management-item';
+                const formattedDate = new Date(schedule.tanggalTayang).toLocaleDateString();
+                
+                // Make sure we can access the film data
+                const filmTitle = schedule.film?.judul || 'Unknown Film';
+                const filmRoom = schedule.film?.ruangan || 'Unknown Room';
+                
+                scheduleItem.innerHTML = `
+                    <h3>${filmTitle} | ${schedule.jamTayang}</h3>
+                    <p class="text-gray">Date: ${formattedDate}</p>
+                    <p class="text-gray">Room: ${filmRoom}</p>
+                    <div class="actions">
+                        <button class="btn btn-secondary" onclick="viewScheduleDetails('${schedule.id}')">View Details</button>
+                        <button class="btn btn-secondary" onclick="openUpdatePopup('${schedule.id}')">Update</button>
+                        <button class="btn btn-danger" onclick="openDeletePopup('${schedule.id}')">Delete</button>
+                    </div>
+                `;
+                scheduleList.appendChild(scheduleItem);
+            });
+        }
+
+        async function createSchedule() {
+            const filmId = document.getElementById('filmId').value;
+            const tanggalTayang = document.getElementById('tanggalTayang').value;
+            const jamTayang = document.getElementById('jamTayang').value; // Time input already includes HH:mm
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append('username', ADMIN_USERNAME);
+                formData.append('password', ADMIN_PASSWORD);
+                formData.append('filmId', filmId);
+                formData.append('tanggalTayang', tanggalTayang);
+                formData.append('jamTayang', jamTayang);
+
+                const response = await fetch('/api/scheduls/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    document.getElementById('addScheduleForm').reset();
+                    alert('Schedule created successfully!');
+                    fetchSchedules();
+                } else {
+                    const errorText = await response.text();
+                    console.error('Error creating schedule:', errorText);
+                    alert('Failed to create schedule: ' + errorText);
+                }
+            } catch (error) {
+                console.error('Error creating schedule:', error);
+                alert('Failed to create schedule: ' + error.message);
+            }
+        }
+
+        async function viewScheduleDetails(scheduleId) {
+            try {
+                const response = await fetch(`/api/scheduls/showAll?username=${ADMIN_USERNAME}&password=${ADMIN_PASSWORD}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                });
+                const schedules = await response.json();
+                const schedule = schedules.find(s => s.id === scheduleId);
+                
+                if (schedule) {
+                    const formattedDate = new Date(schedule.tanggalTayang).toLocaleDateString();
+                    const popupContent = document.getElementById('scheduleDetailsContent');
+                    popupContent.innerHTML = `
+                        <h3>${schedule.film.judul}</h3>
+                        <p>Date: ${formattedDate}</p>
+                        <p>Time: ${schedule.jamTayang}</p>
+                        <div class="genre">Room: ${schedule.film.ruangan}</div>
+                        <p class="synopsis">${schedule.film.sinopsis}</p>
+                    `;
+                    document.getElementById('scheduleDetailsPopup').classList.add('active');
+                }
+            } catch (error) {
+                console.error('Error fetching schedule details:', error);
+            }
+        }
+
+        async function updateSchedule() {
+            if (!currentScheduleId) {
+                console.error('No schedule selected for update');
+                return;
+            }
+            const tanggalTayang = document.getElementById('updateTanggalTayang').value;
+            const jamTayang = document.getElementById('updateJamTayang').value;
+
+            try {
+                const response = await fetch('/api/scheduls/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        username: ADMIN_USERNAME,
+                        password: ADMIN_PASSWORD,
+                        jadwalId: currentScheduleId,
+                        tanggalTayang,
+                        jamTayang,
+                    }),
+                });
+                if (response.ok) {
+                    alert('Schedule updated successfully!');
+                    closePopup('updateSchedulePopup');
+                    fetchSchedules();
+                } else {
+                    const errorText = await response.text();
+                    alert('Error updating schedule: ' + errorText);
+                }
+            } catch (error) {
+                console.error('Error updating schedule:', error);
+                alert('Failed to update schedule: ' + error.message);
+            }
+            currentScheduleId = null;
+        }
+
+        function openUpdatePopup(scheduleId) {
+            currentScheduleId = scheduleId;
+            document.getElementById('updateSchedulePopup').classList.add('active');
+        }
+
+        let currentScheduleId = null;
+
+        async function deleteSchedule() {
+            if (!currentScheduleId) {
+                console.error('No schedule selected for deletion');
+                return;
+            }
+            try {
+                const response = await fetch('/api/scheduls/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        username: ADMIN_USERNAME,
+                        password: ADMIN_PASSWORD,
+                        jadwalId: currentScheduleId,
+                    }),
+                });
+                if (response.ok) {
+                    alert('Schedule deleted successfully!');
+                    closePopup('deleteSchedulePopup');
+                    fetchSchedules();
+                } else {
+                    const errorText = await response.text();
+                    alert('Error deleting schedule: ' + errorText);
+                }
+            } catch (error) {
+                console.error('Error deleting schedule:', error);
+                alert('Failed to delete schedule: ' + error.message);
+            }
+            currentScheduleId = null;
+        }
+
+        function openDeletePopup(scheduleId) {
+            currentScheduleId = scheduleId;
+            document.getElementById('deleteSchedulePopup').classList.add('active');
+        }
+
+        function closePopup(popupId) {
+            document.getElementById(popupId).classList.remove('active');
+            currentScheduleId = null;
+        }
+
+        // Load initial data
+        fetchFilms();
+        fetchSchedules();
+    </script>
 </body>
 </html>
