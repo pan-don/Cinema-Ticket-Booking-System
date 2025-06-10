@@ -1,10 +1,14 @@
 package com.project.mvc.repository;
 
-import com.project.mvc.model.User;
-import com.project.mvc.model.Ticket;
-import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.project.mvc.model.Jadwal;
+import com.project.mvc.model.Ticket;
+import com.project.mvc.model.User;
 
 public interface TicketRepository extends JpaRepository<Ticket, String> {
     List<Ticket> findByUser(User user);
+    List<Ticket> findByJadwal(Jadwal jadwal);
 }

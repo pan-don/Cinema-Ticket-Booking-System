@@ -5,40 +5,233 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ticket Payment</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .movie-details {
+            background: var(--background-color, #1E1E1E);
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .price-display {
+            font-size: 1.5rem;
+            color: #FFD700;
+            margin: 1rem 0;
+        }
+        .total-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ddd;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            background: #4CAF50;
+            color: white;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+            z-index: 1000;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+    </style>
 </head>
 <body>
 
     <div class="container">
         <h1>Confirm Your Booking</h1>
         
-        <!-- Booking Details (Static Example) -->
-        <div class="management-item" style="background-color: #1E1E1E; text-align: center;">
-            <h3>Dune: Part Two</h3>
-            <p>Date: 2024-10-26 | Time: 14:00 | Room: Studio 1</p>
-            <p style="font-size: 1.5rem; color: #FFD700;">Price: Rp 50,000 / ticket</p>
+        <!-- Movie Details -->
+        <div id="movieDetails" class="movie-details">
+            <!-- Will be populated by JavaScript -->
         </div>
 
-        <form action="/api/payments/buy" method="POST" class="form-container">
-            <!-- Hidden fields for user and schedule details. In a real app, these would be populated dynamically. -->
-            <input type="hidden" name="username" value="user_username">
-            <input type="hidden" name="password" value="user_password">
-            <input type="hidden" name="jadwalId" value="jadwal_abc"> <!-- Example Schedule ID -->
-
+        <form id="paymentForm" class="form-container">
             <div class="input-group">
                 <label for="kuantitas">Quantity</label>
-                <input type="number" id="kuantitas" name="kuantitas" value="1" min="1" max="10" required>
+                <input type="number" id="kuantitas" name="kuantitas" value="1" min="1" max="10" required 
+                       oninput="calculateTotal()">
             </div>
 
-            <div class="input-group">
-                <label for="pembayaran">Total Payment</label>
-                <!-- NOTE: Total payment would typically be calculated with JS. Here, user must enter it. -->
-                <input type="number" id="pembayaran" name="pembayaran" placeholder="e.g., 50000 for 1 ticket" required>
+            <div class="total-section">
+                <div class="input-group">
+                    <label for="totalAmount">Total Amount</label>
+                    <input type="text" id="totalAmount" readonly>
+                </div>
+
+                <div class="input-group">
+                    <label for="pembayaran">Payment Amount</label>
+                    <input type="number" id="pembayaran" name="pembayaran" required 
+                           placeholder="Enter amount to pay">
+                </div>
             </div>
             
-            <button type="submit" class="btn btn-primary">Confirm Purchase</button>
-            <a href="user_dashboard.html" class="btn btn-secondary" style="margin-top: 1rem;">Cancel</a>
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary">Confirm Purchase</button>
+                <a href="user_dashboard.html" class="btn btn-secondary">Cancel</a>
+            </div>
         </form>
     </div>
+
+    <!-- Success Notification -->
+    <div id="notification" class="notification">
+        Ticket purchased successfully!
+    </div>    <script>
+        // Check if user is logged in
+        const userData = JSON.parse(sessionStorage.getItem('user'));
+        if (!userData || !userData.username) {
+            alert('Please log in to make a purchase');
+            window.location.href = 'index.html';
+        }
+
+        let schedule = null;
+        let selectedFilm = null;
+
+        // Get schedule ID from URL parameters
+        function getScheduleId() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('scheduleId');
+        }
+
+        // Fetch schedule and film details
+        async function fetchScheduleDetails() {
+            try {
+                const response = await fetch('/api/scheduls/showAll');
+                const schedules = await response.json();
+                const scheduleId = getScheduleId();
+                
+                schedule = schedules.find(s => s.id === scheduleId);
+                if (schedule) {
+                    selectedFilm = schedule.film;
+                    displayMovieDetails();
+                } else {
+                    alert('Schedule not found!');
+                    window.location.href = 'user_dashboard.html';
+                }
+            } catch (error) {
+                console.error('Error fetching schedule:', error);
+                alert('Error loading schedule details');
+            }
+        }
+
+        // Display movie details
+        function displayMovieDetails() {
+            const details = document.getElementById('movieDetails');
+            const formattedDate = new Date(schedule.tanggalTayang).toLocaleDateString();
+            
+            details.innerHTML = `
+                <h3>${selectedFilm.judul}</h3>
+                <p>Date: ${formattedDate} | Time: ${schedule.jamTayang} | Room: ${selectedFilm.ruangan}</p>
+                <p class="price-display">Price: Rp ${selectedFilm.harga.toLocaleString()} / ticket</p>
+            `;
+
+            calculateTotal();
+        }
+
+        // Calculate total based on quantity
+        function calculateTotal() {
+            if (!selectedFilm) return;
+
+            const quantity = parseInt(document.getElementById('kuantitas').value) || 0;
+            const total = quantity * selectedFilm.harga;
+            document.getElementById('totalAmount').value = `Rp ${total.toLocaleString()}`;
+            
+            // Update payment field minimum and validate max quantity
+            const paymentField = document.getElementById('pembayaran');
+            const maxSeats = selectedFilm.kapasitasRuangan;
+            const quantityInput = document.getElementById('kuantitas');
+            
+            if (quantity > maxSeats) {
+                alert(`Sorry, only ${maxSeats} seats available`);
+                quantityInput.value = maxSeats;
+                calculateTotal();
+                return;
+            }
+            
+            paymentField.min = total;
+            paymentField.placeholder = `Minimum: Rp ${total.toLocaleString()}`;
+        }
+
+        // Show success notification with details
+        function showNotification() {
+            const notification = document.getElementById('notification');
+            const quantity = document.getElementById('kuantitas').value;
+            const total = quantity * selectedFilm.harga;
+            
+            notification.innerHTML = `
+                <strong>Ticket purchased successfully!</strong><br>
+                Movie: ${selectedFilm.judul}<br>
+                Date: ${new Date(schedule.tanggalTayang).toLocaleDateString()}<br>
+                Time: ${schedule.jamTayang}<br>
+                Quantity: ${quantity}<br>
+                Total: Rp ${total.toLocaleString()}
+            `;
+            
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+                window.location.href = 'ticket_history.html';
+            }, 3000); // Show for 3 seconds
+        }
+
+        // Handle form submission
+        document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const quantity = parseInt(document.getElementById('kuantitas').value);
+            const payment = parseInt(document.getElementById('pembayaran').value);
+            const totalAmount = selectedFilm.harga * quantity;
+
+            // Validate payment amount
+            if (payment < totalAmount) {
+                alert(`Insufficient payment amount. Required: Rp ${totalAmount.toLocaleString()}`);
+                return;
+            }
+            
+            // Get user from session storage
+            const userData = JSON.parse(sessionStorage.getItem('user'));
+            if (!userData || !userData.username) {
+                alert('Please log in to make a purchase');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/payments/buy', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        username: userData.username,
+                        password: userData.password,
+                        jadwalId: schedule.id,
+                        pembayaran: payment,
+                        kuantitas: quantity
+                    })
+                });
+
+                if (response.ok) {
+                    const ticket = await response.json();
+                    showNotification();
+                } else {
+                    const errorText = await response.text();
+                    alert('Payment failed: ' + errorText);
+                }
+            } catch (error) {
+                console.error('Error processing payment:', error);
+                alert('Error processing payment: ' + error.message);
+            }
+        });
+
+        // Initialize page
+        fetchScheduleDetails();
+    </script>
 
 </body>
 </html>

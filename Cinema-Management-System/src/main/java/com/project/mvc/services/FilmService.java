@@ -16,6 +16,12 @@ import lombok.RequiredArgsConstructor;
 public class FilmService {
     private final FilmRepository filmRepo;
 
+    private void validatePositiveNumber(String fieldName, int value) {
+        if (value < 0) {
+            throw new RuntimeException(fieldName + " cannot be negative");
+        }
+    }
+
     @Transactional
     public Film createFilm(
         String judul,
@@ -30,6 +36,11 @@ public class FilmService {
         if(filmRepo.findByJudul(judul).isPresent()) {
             throw new RuntimeException("Judul already exists");
         }
+
+        // Validate positive numbers
+        validatePositiveNumber("Room capacity", kapasitasRuangan);
+        validatePositiveNumber("Price", harga);
+        validatePositiveNumber("Sold tickets", tiketTerjual);
 
         Film film = new Film();
         film.setJudul(judul);
@@ -51,6 +62,10 @@ public class FilmService {
         int kapasitasRuangan,
         int harga
     ) {
+        // Validate positive numbers
+        validatePositiveNumber("Room capacity", kapasitasRuangan);
+        validatePositiveNumber("Price", harga);
+
         Film film = filmRepo.findById(filmId)
         .orElseThrow(() -> new RuntimeException("Film not found"));
 
