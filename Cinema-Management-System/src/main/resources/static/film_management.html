@@ -4,21 +4,207 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Management</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css">    <style>
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1E1E1E;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1000;
+            max-width: 90%;
+            width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .popup.active {
+            display: block;
+        }
+        
+        .popup-header {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #E50914;
+            border-bottom: 2px solid #E50914;
+            padding-bottom: 0.5rem;
+        }
+        
+        .popup-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            gap: 1rem;
+        }
+        
+        .popup-buttons button {
+            flex: 1;
+        }
+
+        .movie-details {
+            color: #FFFFFF;
+        }
+
+        .movie-details h3 {
+            color: #FFD700;
+            margin-bottom: 1rem;
+        }
+
+        .movie-details span {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #B3B3B3;
+        }
+
+        .movie-details .synopsis {
+            margin-top: 1.5rem;
+        }
+
+        .movie-details .synopsis h4 {
+            color: #E50914;
+            margin-bottom: 0.5rem;
+        }
+
+        .movie-details .synopsis p {
+            color: #FFFFFF;
+            line-height: 1.5;
+        }
+
+        .text-gray {
+            color: #B3B3B3;
+        }
+
+        .genre {
+            color: #FFD700;
+            margin: 0.5rem 0;
+        }
+
+        .synopsis {
+            color: #FFFFFF;
+            line-height: 1.5;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #E50914;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1001;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Mobile responsiveness improvements */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .management-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .popup {
+                width: 95%;
+                margin: 0 10px;
+            }
+
+            .form-container {
+                padding: 1rem;
+            }
+
+            .input-group {
+                margin-bottom: 0.75rem;
+            }
+
+            .popup-buttons {
+                flex-direction: column;
+            }
+
+            .popup-buttons button {
+                width: 100%;
+                margin: 0.25rem 0;
+            }
+        }
+
+        /* Form validation styles */
+        .input-group input:invalid,
+        .input-group textarea:invalid {
+            border-color: #E50914;
+        }
+
+        .error-message {
+            color: #E50914;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .input-group input:invalid + .error-message,
+        .input-group textarea:invalid + .error-message {
+            display: block;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            display: none;
+            animation: slideIn 0.3s;
+            z-index: 1002;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+    </style>
 </head>
 <body>
-
+    <div id="loadingSpinner" class="loading-spinner"></div>
+    <div id="toast" class="toast"></div>
     <div class="container">
         <h1>Movie Management</h1>
 
-        <!-- Create Movie Form -->
+        <!-- Add Movie Section -->
         <section>
             <h2>Add New Movie</h2>
-            <form action="/api/films/create" method="POST" class="form-container" style="max-width: none;">
-                <!-- Hidden admin credentials. In a real app, this would be handled by session authentication. -->
-                <input type="hidden" name="username" value="admin_username">
-                <input type="hidden" name="password" value="admin_password">
-                
+            <form id="addMovieForm" class="form-container">
                 <div class="input-group">
                     <label for="judul">Title</label>
                     <input type="text" id="judul" name="judul" required>
@@ -29,11 +215,11 @@
                 </div>
                 <div class="input-group">
                     <label for="sinopsis">Synopsis</label>
-                    <textarea id="sinopsis" name="sinopsis" rows="4"></textarea>
+                    <textarea id="sinopsis" name="sinopsis" rows="3" required></textarea>
                 </div>
                 <div class="input-group">
-                    <label for="durasi">Duration (e.g., 02:30:00)</label>
-                    <input type="text" id="durasi" name="durasi" placeholder="HH:mm:ss" required>
+                    <label for="durasi">Duration (HH:mm)</label>
+                    <input type="time" id="durasi" name="durasi" value="00:00" required onchange="this.value = this.value + ':00';">
                 </div>
                 <div class="input-group">
                     <label for="ruangan">Room</label>
@@ -43,57 +229,284 @@
                     <label for="kapasitasRuangan">Room Capacity</label>
                     <input type="number" id="kapasitasRuangan" name="kapasitasRuangan" required>
                 </div>
-                 <div class="input-group">
+                <div class="input-group">
                     <label for="harga">Price</label>
                     <input type="number" id="harga" name="harga" required>
                 </div>
-                <input type="hidden" name="tiketTerjual" value="0">
-                
-                <button type="submit" class="btn btn-primary">Create Movie</button>
+                <button type="button" class="btn btn-primary" onclick="createMovie()">Create Movie</button>
             </form>
         </section>
 
-        <hr style="border-color: #333; margin: 3rem 0;">
+        <hr>
 
-        <!-- Existing Movies List -->
+        <!-- Movie List Section -->
         <section>
             <h2>Existing Movies</h2>
-            <div class="management-grid">
-                <!-- Example Movie 1 for Management -->
-                <div class="management-item">
-                    <h3>Dune: Part Two (ID: film_123)</h3>
-                    <form action="/api/films/update" method="POST">
-                        <input type="hidden" name="username" value="admin_username">
-                        <input type="hidden" name="password" value="admin_password">
-                        <input type="hidden" name="filmId" value="film_123">
-                        <div class="input-group">
-                            <label>Room</label>
-                            <input type="text" name="ruangan" value="Studio 1">
-                        </div>
-                        <div class="input-group">
-                            <label>Capacity</label>
-                            <input type="number" name="kapasitasRuangan" value="150">
-                        </div>
-                        <div class="input-group">
-                            <label>Price</label>
-                            <input type="number" name="harga" value="50000">
-                        </div>
-                        <button type="submit" class="btn btn-secondary" style="margin-top: 1rem;">Update</button>
-                    </form>
-                    <form action="/api/films/delete" method="POST" style="margin-top: 1rem;">
-                        <input type="hidden" name="username" value="admin_username">
-                        <input type="hidden" name="password" value="admin_password">
-                        <input type="hidden" name="filmId" value="film_123">
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                </div>
-                <!-- Add more managed movies here -->
-            </div>
+            <div id="movieList" class="management-grid"></div>
         </section>
+
         <div style="text-align: center; margin-top: 2rem;">
-             <a href="admin_dashboard.html" class="btn btn-secondary">Back to Dashboard</a>
+            <a href="admin_dashboard.html" class="btn btn-secondary">Back to Dashboard</a>
+        </div>    </div>
+
+    <!-- Overlay for popups -->
+    <div id="overlay" class="overlay"></div>    <!-- Overlay and Popups -->
+    <div id="overlay" class="overlay"></div>
+
+    <!-- Popup for Movie Details -->
+    <div id="movieDetailsPopup" class="popup">
+        <div class="popup-header">Movie Details</div>
+        <div id="movieDetailsContent"></div>
+        <div class="popup-buttons">
+            <button class="btn btn-secondary" onclick="closePopup('movieDetailsPopup')">Close</button>
         </div>
     </div>
 
+    <!-- Popup for Update Movie -->
+    <div id="updateMoviePopup" class="popup">
+        <div class="popup-header">Update Movie</div>
+        <form id="updateMovieForm" class="form-container">
+            <div class="input-group">
+                <label for="updateRuangan">Room</label>
+                <input type="text" id="updateRuangan" name="ruangan" required>
+            </div>
+            <div class="input-group">
+                <label for="updateKapasitasRuangan">Room Capacity</label>
+                <input type="number" id="updateKapasitasRuangan" name="kapasitasRuangan" min="1" required>
+            </div>
+            <div class="input-group">
+                <label for="updateHarga">Price</label>
+                <input type="number" id="updateHarga" name="harga" min="0" required>
+            </div>
+            <div class="popup-buttons">
+                <button type="button" class="btn btn-secondary" onclick="closePopup('updateMoviePopup')">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updateMovie()">Save Changes</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Popup for Delete Confirmation -->
+    <div id="deleteMoviePopup" class="popup">
+        <div class="popup-header">Delete Movie</div>
+        <p class="text-center">Are you sure you want to delete this movie?</p>
+        <div class="popup-buttons">
+            <button class="btn btn-secondary" onclick="closePopup('deleteMoviePopup')">Cancel</button>
+            <button class="btn btn-danger" onclick="deleteMovie()">Yes</button>
+        </div>
+    </div>    <script>
+        // Store admin credentials (in real app, this should come from a secure session/storage)
+        const ADMIN_USERNAME = 'admin';
+        const ADMIN_PASSWORD = 'admin123';
+        
+        // Store the current movie being edited/deleted
+        let currentMovieId = null;
+
+        // Initialize application state
+        const AppState = {
+            movies: []
+        };
+
+        async function fetchMovies() {
+            try {
+                const res = await fetch('/api/films/all');
+                if (!res.ok) throw new Error('Failed to fetch movies');
+                AppState.movies = await res.json();
+                renderMovies(AppState.movies);
+            } catch (error) {
+                alert('Error loading movies: ' + error.message);
+            }
+        }
+
+        function renderMovies(movies) {
+            const list = document.getElementById('movieList');
+            list.innerHTML = '';
+
+            if (!movies || movies.length === 0) {
+                list.innerHTML = '<div class="management-item"><p class="text-center">No movies available</p></div>';
+                return;
+            }
+
+            movies.forEach(movie => {
+                const item = document.createElement('div');
+                item.className = 'management-item';
+                item.innerHTML = `
+                    <h3>${movie.judul}</h3>
+                    <p class="genre"><span class="text-gray">Genre:</span> ${movie.genre}</p>
+                    <p class="synopsis">${movie.sinopsis.length > 150 ? movie.sinopsis.slice(0, 150) + '...' : movie.sinopsis}</p>
+                    <div class="actions">
+                        <button class="btn btn-primary" onclick="viewMovieDetails('${movie.id}')">View Details</button>
+                        <button class="btn btn-secondary" onclick="openUpdatePopup('${movie.id}')">Update</button>
+                        <button class="btn btn-danger" onclick="openDeletePopup('${movie.id}')">Delete</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function viewMovieDetails(movieId) {
+            const movie = AppState.movies.find(m => m.id === movieId);
+            if (!movie) return;
+
+            const content = document.getElementById('movieDetailsContent');
+            content.innerHTML = `
+                <div class="movie-details">
+                    <h3>${movie.judul}</h3>
+                    <span>${movie.genre}</span>
+                    <span>Duration: ${movie.durasi}</span>
+                    <span>Room: ${movie.ruangan} (Capacity: ${movie.kapasitasRuangan})</span>
+                    <span>Price: Rp ${movie.harga.toLocaleString('id-ID')}</span>
+                    <span>Tickets Sold: ${movie.tiketTerjual}</span>
+                    <div class="synopsis mt-4">
+                        <h4>Synopsis</h4>
+                        <p>${movie.sinopsis}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('movieDetailsPopup').classList.add('active');
+        }
+
+        function openUpdatePopup(movieId) {
+            const movie = AppState.movies.find(m => m.id === movieId);
+            if (!movie) return;
+
+            currentMovieId = movieId;
+            
+            // Populate update form with current values
+            document.getElementById('updateRuangan').value = movie.ruangan;
+            document.getElementById('updateKapasitasRuangan').value = movie.kapasitasRuangan;
+            document.getElementById('updateHarga').value = movie.harga;
+            
+            document.getElementById('updateMoviePopup').classList.add('active');
+        }
+
+        function openDeletePopup(movieId) {
+            console.log('Opening delete popup for movieId:', movieId); // Debug log
+            currentMovieId = movieId;
+            document.getElementById('deleteMoviePopup').classList.add('active');
+        }
+
+        function closePopup(popupId) {
+            document.getElementById(popupId).classList.remove('active');
+            if (popupId === 'updateMoviePopup' || popupId === 'deleteMoviePopup') {
+                currentMovieId = null;
+            }
+        }
+
+        async function createMovie() {
+            try {
+                const formData = new URLSearchParams();
+                formData.append('username', ADMIN_USERNAME);
+                formData.append('password', ADMIN_PASSWORD);
+
+                // Add all movie details from the form
+                const form = document.getElementById('addMovieForm');
+                formData.append('judul', form.elements['judul'].value);
+                formData.append('genre', form.elements['genre'].value);
+                formData.append('sinopsis', form.elements['sinopsis'].value);
+
+                // Ensure durasi is in HH:mm:ss format
+                const durasiInput = form.elements['durasi'].value;
+                const durasiFormatted = durasiInput.includes(':00') ? durasiInput : durasiInput + ':00';
+                formData.append('durasi', durasiFormatted);
+
+                formData.append('ruangan', form.elements['ruangan'].value);
+                formData.append('kapasitasRuangan', parseInt(form.elements['kapasitasRuangan'].value));
+                formData.append('harga', parseInt(form.elements['harga'].value));
+                formData.append('tiketTerjual', '0');
+
+                const response = await fetch('/api/films/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString()
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Create failed:', response.status, errorText); // Debug log
+                    throw new Error(`Failed to create movie: ${response.status} ${errorText}`);
+                }
+
+                alert('Movie created successfully!');
+                form.reset();
+                await fetchMovies();
+
+            } catch (error) {
+                console.error('Create error:', error); // Debug log
+                alert('Error creating movie: ' + error.message);
+            }
+        }
+
+        async function updateMovie() {
+            if (!currentMovieId) return;
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append('username', ADMIN_USERNAME);
+                formData.append('password', ADMIN_PASSWORD);
+                formData.append('filmId', currentMovieId);
+                formData.append('ruangan', document.getElementById('updateRuangan').value);
+                formData.append('kapasitasRuangan', document.getElementById('updateKapasitasRuangan').value);
+                formData.append('harga', document.getElementById('updateHarga').value);
+
+                const response = await fetch('/api/films/update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString()
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update movie');
+                }
+
+                alert('Movie updated successfully!');
+                closePopup('updateMoviePopup');
+                await fetchMovies();
+
+            } catch (error) {
+                alert('Error updating movie: ' + error.message);
+            }
+        }
+
+        async function deleteMovie() {
+            if (!currentMovieId) {
+                alert('No movie selected for deletion');
+                return;
+            }
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append('username', ADMIN_USERNAME);
+                formData.append('password', ADMIN_PASSWORD);
+                formData.append('filmId', currentMovieId);
+
+                console.log('Attempting to delete movie with ID:', currentMovieId); // Debug log
+
+                const response = await fetch('/api/films/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString()
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Delete failed:', response.status, errorText); // Debug log
+                    throw new Error(`Failed to delete movie: ${response.status} ${errorText}`);
+                }
+
+                console.log('Movie deleted successfully'); // Debug log
+                alert('Movie deleted successfully!');
+                closePopup('deleteMoviePopup');
+                await fetchMovies();
+
+            } catch (error) {
+                console.error('Delete error:', error); // Debug log
+                alert('Error deleting movie: ' + error.message);
+            }
+        }
+
+        // Load initial data
+        fetchMovies();
+    </script>
 </body>
 </html>

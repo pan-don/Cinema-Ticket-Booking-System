@@ -61,25 +61,17 @@
                 : '/api/Authenticator/login/user';
 
             try {
-                // CHANGED: prepare data as application/x-www-form-urlencoded
-                const formData = new URLSearchParams(); // CHANGED
-                formData.append('username', username);  // CHANGED
-                formData.append('password', password);  // CHANGED
+                const formData = new URLSearchParams();
+                formData.append('username', username); 
+                formData.append('password', password); 
 
                 const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded' // CHANGED
+                        'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    body: formData.toString() // CHANGED
+                    body: formData.toString()
                 });
-
-                // OLD:
-                // const response = await fetch(endpoint, {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({ username, password })
-                // });
 
                 if (response.ok) {
                     const user = await response.json();
