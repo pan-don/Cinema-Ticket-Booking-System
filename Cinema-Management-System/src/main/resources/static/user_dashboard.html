@@ -5,66 +5,219 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .movie-details {
+            display: grid;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        .movie-schedules {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .movie-schedule {
+            background: var(--primary-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }        .popup-content {
+            position: relative;
+            background: var(--background-color, #1E1E1E);
+            color: var(--text-color, #fff);
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        .popup.active {
+            display: block;
+        }
+        .close-popup {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--text-color, #fff);
+            font-size: 1.5rem;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        .close-popup:hover {
+            opacity: 1;
+        }
+        .movie-description {
+            margin: 1.5rem 0;
+            line-height: 1.6;
+        }
+        .schedule-section {
+            margin-top: 1.5rem;
+        }
+        .schedule-section h3 {
+            margin-bottom: 1rem;
+        }
+        .popup-buttons {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+    </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>Now Showing</h1>
+        <h1>Film List</h1>
         <p style="text-align: center; color: #B3B3B3; margin-top: -1rem; margin-bottom: 2rem;">Welcome, User! Here are the latest movies.</p>
 
         <!-- Movie List -->
-        <div class="movie-scroller">
-            <!-- Example Movie 1 -->
-            <div class="movie-card">
-                <img src="https://placehold.co/600x400/E50914/FFFFFF?text=Movie+Poster" alt="Movie Poster">
-                <div class="movie-card-content">
-                    <h3>Dune: Part Two</h3>
-                    <p>Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.</p>
-                    <div class="movie-details">
-                        <span>Schedule: <strong>14:00, 17:00, 20:00</strong></span>
-                        <span>Price: <strong class="highlight">Rp 50,000</strong></span>
-                        <span>Seats Available: <strong class="highlight">85</strong></span>
-                    </div>
-                    <a href="payment.html" class="btn btn-primary" style="margin-top: 1rem;">Book Tickets</a>
-                </div>
-            </div>
-
-            <!-- Example Movie 2 -->
-            <div class="movie-card">
-                <img src="https://placehold.co/600x400/1E1E1E/FFFFFF?text=Movie+Poster" alt="Movie Poster">
-                <div class="movie-card-content">
-                    <h3>Godzilla x Kong</h3>
-                    <p>The new empire follows up the explosive showdown of Godzilla vs. Kong with an all-new cinematic adventure.</p>
-                     <div class="movie-details">
-                        <span>Schedule: <strong>13:00, 16:00, 19:00</strong></span>
-                        <span>Price: <strong class="highlight">Rp 45,000</strong></span>
-                        <span>Seats Available: <strong class="highlight">112</strong></span>
-                    </div>
-                    <a href="payment.html" class="btn btn-primary" style="margin-top: 1rem;">Book Tickets</a>
-                </div>
-            </div>
-
-            <!-- Example Movie 3 -->
-            <div class="movie-card">
-                 <img src="https://placehold.co/600x400/555/FFFFFF?text=Movie+Poster" alt="Movie Poster">
-                <div class="movie-card-content">
-                    <h3>Oppenheimer</h3>
-                    <p>The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb.</p>
-                     <div class="movie-details">
-                        <span>Schedule: <strong>15:00, 18:30, 21:00</strong></span>
-                        <span>Price: <strong class="highlight">Rp 55,000</strong></span>
-                        <span>Seats Available: <strong class="highlight">43</strong></span>
-                    </div>
-                    <a href="payment.html" class="btn btn-primary" style="margin-top: 1rem;">Book Tickets</a>
-                </div>
-            </div>
-             <!-- Add more movie cards here -->
+        <div id="movieList" class="movie-scroller">
+            <!-- Movies will be dynamically populated here -->
         </div>
 
         <div style="text-align: center; margin-top: 2rem;">
-             <a href="ticket_history.html" class="btn btn-secondary">Check Purchase History</a>
+            <a href="ticket_history.html" class="btn btn-secondary">Check Purchase History</a>
         </div>
     </div>
+
+    <!-- Movie Details Popup -->
+    <div id="movieDetailsPopup" class="popup">
+        <div class="popup-content">
+            <button class="close-popup" onclick="closePopup()">&times;</button>
+            <div id="movieDetailsContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Fetch schedules and group them by movies
+        async function fetchSchedules() {
+            try {
+                const response = await fetch('/api/scheduls/showAll');
+                const schedules = await response.json();
+                
+                // Group schedules by film
+                const movieMap = new Map();
+                schedules.forEach(schedule => {
+                    const film = schedule.film;
+                    if (!movieMap.has(film.id)) {
+                        movieMap.set(film.id, {
+                            film: film,
+                            schedules: []
+                        });
+                    }
+                    movieMap.get(film.id).schedules.push(schedule);
+                });
+                
+                renderMovies(Array.from(movieMap.values()));
+            } catch (error) {
+                console.error('Error fetching schedules:', error);
+            }
+        }
+
+        function renderMovies(moviesData) {
+            const movieList = document.getElementById('movieList');
+            movieList.innerHTML = '';
+
+            moviesData.forEach(({film, schedules}) => {                const movieCard = document.createElement('div');
+                movieCard.className = 'movie-card';
+                movieCard.dataset.filmId = film.id;
+                movieCard.dataset.movieData = JSON.stringify({film, schedules});
+                
+                const scheduleTimes = schedules.map(s => {
+                    const formattedDate = new Date(s.tanggalTayang).toLocaleDateString();
+                    const time = s.jamTayang;
+                    return `<span class="movie-schedule" data-schedule-id="${s.id}">${formattedDate} ${time}</span>`;
+                }).join('');
+
+                movieCard.innerHTML = `
+                    <img src="${film.gambarURL || 'https://placehold.co/600x400/1E1E1E/FFFFFF?text=Movie+Poster'}" alt="${film.judul} Poster">
+                    <div class="movie-card-content">
+                        <h3>${film.judul}</h3>
+                        <p>${film.sinopsis.substring(0, 150)}...</p>
+                        <div class="movie-details">
+                            <span>Genre: <strong>${film.genre}</strong></span>
+                            <span>Price: <strong class="highlight">Rp ${film.harga.toLocaleString()}</strong></span>
+                            <span>Room: <strong>${film.ruangan}</strong></span>
+                            <span>Available Times:</span>
+                            <div class="movie-schedules">
+                                ${scheduleTimes}
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <button onclick="showMovieDetails('${film.id}')" class="btn btn-secondary">View Details</button>
+                            <button onclick="bookMovie('${film.id}')" class="btn btn-primary">Book Tickets</button>
+                        </div>
+                    </div>
+                `;
+                movieList.appendChild(movieCard);
+            });
+        }        function showMovieDetails(filmId) {
+            const popup = document.getElementById('movieDetailsPopup');
+            const content = document.getElementById('movieDetailsContent');
+            
+            // Find the movie card with matching film ID
+            const movieCard = document.querySelector(`[data-film-id="${filmId}"]`);
+            if (movieCard) {
+                const movieData = JSON.parse(movieCard.dataset.movieData);
+                const scheduleTimes = movieData.schedules.map(s => {
+                    const formattedDate = new Date(s.tanggalTayang).toLocaleDateString();
+                    return `<span class="movie-schedule">${formattedDate} ${s.jamTayang}</span>`;
+                }).join('');
+
+                content.innerHTML = `
+                    <h2>${movieData.film.judul}</h2>
+                    <div class="movie-details">
+                        <p><strong>Genre:</strong> ${movieData.film.genre}</p>
+                        <p><strong>Room:</strong> ${movieData.film.ruangan}</p>
+                        <p><strong>Price:</strong> Rp ${movieData.film.harga.toLocaleString()}</p>
+                    </div>
+                    <div class="movie-description">
+                        <h3>Synopsis</h3>
+                        <p>${movieData.film.sinopsis}</p>
+                    </div>
+                    <div class="schedule-section">
+                        <h3>Available Schedules</h3>
+                        <div class="movie-schedules">
+                            ${scheduleTimes}
+                        </div>
+                    </div>
+                    <div class="popup-buttons">
+                        <button onclick="closePopup()" class="btn btn-secondary">Close</button>
+                    </div>
+                `;
+                popup.classList.add('active');
+            }
+        }
+
+        function closePopup() {
+            document.getElementById('movieDetailsPopup').classList.remove('active');
+        }
+
+        function bookMovie(scheduleId) {
+            window.location.href = `payment.html?scheduleId=${scheduleId}`;
+        }
+
+        // Initialize the page
+        fetchSchedules();
+    </script>
 
 </body>
 </html>

@@ -2,6 +2,8 @@ package com.project.mvc.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,9 +23,9 @@ import lombok.RequiredArgsConstructor;
 public class PaymentController {
     private final LoginService loginService;
     private final PaymentService paymentService;
-
+ 
     @PostMapping("/buy")
-    public Ticket buyTicket(
+    public ResponseEntity<Ticket> buyTicket(
         @RequestParam String username,
         @RequestParam String password,
         @RequestParam String jadwalId,
@@ -31,16 +33,18 @@ public class PaymentController {
         @RequestParam int kuantitas
     ) {
         User user = loginService.loginUser(username, password);
-        return paymentService.buyTicket(user, jadwalId, pembayaran, kuantitas);
+        Ticket createdTicket = paymentService.buyTicket(user, jadwalId, pembayaran, kuantitas);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTicket);
     }
 
     @PostMapping("/userTicket")
-    public List<Ticket> showAllTicketByUser(
+    public ResponseEntity<List<Ticket>> showAllTicketByUser(
         @RequestParam String username,
         @RequestParam String password,
         @RequestBody User user
     ) {
         loginService.loginUser(username, password);
-        return paymentService.getTicketByUser(user);
+        List<Ticket> tickets = paymentService.getTicketByUser(user);
+        return ResponseEntity.ok(tickets);
     }
 }
