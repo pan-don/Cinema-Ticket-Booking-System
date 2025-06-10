@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,10 +39,9 @@ public class PaymentController {
     @PostMapping("/userTicket")
     public ResponseEntity<List<Ticket>> showAllTicketByUser(
         @RequestParam String username,
-        @RequestParam String password,
-        @RequestBody User user
+        @RequestParam String password
     ) {
-        loginService.loginUser(username, password);
+        User user = loginService.loginUser(username, password);
         List<Ticket> tickets = paymentService.getTicketByUser(user);
         return ResponseEntity.ok(tickets);
     }

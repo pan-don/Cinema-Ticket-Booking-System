@@ -22,22 +22,17 @@ public class PaymentService {
     private final JadwalRepository jadwalRepo;
     private final TicketRepository ticketRepo;    
     
-    private void validatePositiveNumber(String fieldName, int value) {
-        if (value < 0) {
+    // validasi untuk data integer
+    private void validateNumber(String fieldName, int value) {
+        if (value > 0) {
             throw new RuntimeException(fieldName + " cannot be negative");
         }
     }
     
     @Transactional
     public Ticket buyTicket(User user, String jadwalId, int pembayaran, int kuantitas) {
-        // Validate positive numbers first
-        validatePositiveNumber("Payment amount", pembayaran);
-        validatePositiveNumber("Quantity", kuantitas);
-
-        // Additional quantity validation
-        if (kuantitas == 0) {
-            throw new RuntimeException("Quantity must be greater than 0");
-        }
+        validateNumber("Payment amount", pembayaran);
+        validateNumber("Quantity", kuantitas);
 
         // Get schedule and validate it exists
         Jadwal jadwal = jadwalRepo.findById(jadwalId)
@@ -95,8 +90,8 @@ public class PaymentService {
 
     @Transactional
     public int processPayment(int moneyPaid, Film film, int kuantitas) {
-        validatePositiveNumber("Payment amount", moneyPaid);
-        validatePositiveNumber("Quantity", kuantitas);
+        validateNumber("Payment amount", moneyPaid);
+        validateNumber("Quantity", kuantitas);
 
         int totalHarga = film.getHarga() * kuantitas;
         if (moneyPaid < totalHarga) {

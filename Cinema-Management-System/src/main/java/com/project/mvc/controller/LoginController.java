@@ -1,10 +1,15 @@
 package com.project.mvc.controller;
 
-import com.project.mvc.model.*;
-import com.project.mvc.services.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.project.mvc.model.Admin;
+import com.project.mvc.model.User;
+import com.project.mvc.services.LoginService;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
 
 
 @RestController

@@ -37,14 +37,10 @@ public class FilmController {
         @RequestParam int harga,
         @RequestParam int tiketTerjual
     ) {
-        // Verify admin credentials
         loginService.loginAdmin(username, password);
         
-        // Create the film
         Film createdFilm = filmService.createFilm(judul, genre, sinopsis, durasi, ruangan, 
             kapasitasRuangan, harga, tiketTerjual);
-            
-        // Return with 201 Created status
         return ResponseEntity.status(HttpStatus.CREATED).body(createdFilm);
     }
 
