@@ -6,7 +6,7 @@
     <title>Schedule Management</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body>  
 
     <div class="container">
         <h1>Schedule Management</h1>
@@ -14,23 +14,21 @@
         <!-- Create Schedule Form -->
         <section>
             <h2>Add New Schedule</h2>
-            <form action="/api/scheduls/create" method="POST" class="form-container">
-                <input type="hidden" name="username" value="admin_username">
-                <input type="hidden" name="password" value="admin_password">
-                
+            <form id="addScheduleForm" class="form-container">
                 <div class="input-group">
-                    <label for="filmId">Film ID</label>
-                    <input type="text" id="filmId" name="filmId" placeholder="Enter the ID of the film" required>
+                    <label for="filmId">Film</label>
+                    <select id="filmId" name="filmId" required>
+                        <!-- Options will be dynamically populated -->
+                    </select>
                 </div>
                 <div class="input-group">
                     <label for="tanggalTayang">Show Date</label>
                     <input type="date" id="tanggalTayang" name="tanggalTayang" required>
                 </div>
-                 <div class="input-group">
+                <div class="input-group">
                     <label for="jamTayang">Show Time</label>
                     <input type="time" id="jamTayang" name="jamTayang" required>
                 </div>
-                
                 <button type="submit" class="btn btn-primary">Create Schedule</button>
             </form>
         </section>
@@ -40,36 +38,54 @@
         <!-- Existing Schedules List -->
         <section>
             <h2>Existing Schedules</h2>
-            <div class="management-grid">
-                <!-- Example Schedule 1 for Management -->
+            <div id="scheduleList" class="management-grid">
+                <!-- Example Schedule for Management -->
                 <div class="management-item">
-                    <h3>Dune @ 14:00 (ID: jadwal_abc)</h3>
-                    <form action="/api/scheduls/update" method="POST">
-                        <input type="hidden" name="username" value="admin_username">
-                        <input type="hidden" name="password" value="admin_password">
-                        <input type="hidden" name="jadwalId" value="jadwal_abc">
-                        <div class="input-group">
-                            <label>New Date</label>
-                            <input type="date" name="tanggalTayang" value="2024-10-27">
-                        </div>
-                        <div class="input-group">
-                            <label>New Time</label>
-                            <input type="time" name="jamTayang" value="14:30">
-                        </div>
-                        <button type="submit" class="btn btn-secondary" style="margin-top: 1rem;">Update</button>
-                    </form>
-                    <form action="/api/scheduls/delete" method="POST" style="margin-top: 1rem;">
-                        <input type="hidden" name="username" value="admin_username">
-                        <input type="hidden" name="password" value="admin_password">
-                        <input type="hidden" name="jadwalId" value="jadwal_abc">
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
+                    <h3>Film Title @ 14:00 (ID: schedule_abc)</h3>
+                    <button class="btn btn-secondary" onclick="viewScheduleDetails('schedule_abc')">View Details</button>
+                    <button class="btn btn-secondary" onclick="openUpdatePopup('schedule_abc')">Update</button>
+                    <button class="btn btn-danger" onclick="openDeletePopup('schedule_abc')">Delete</button>
                 </div>
                 <!-- Add more managed schedules here -->
             </div>
         </section>
         <div style="text-align: center; margin-top: 2rem;">
              <a href="admin_dashboard.html" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Popup for Schedule Details -->
+    <div id="scheduleDetailsPopup" class="popup">
+        <div class="popup-header">Schedule Details</div>
+        <div id="scheduleDetailsContent"></div>
+        <div class="popup-buttons">
+            <button class="btn btn-secondary" onclick="closePopup('scheduleDetailsPopup')">Close</button>
+        </div>
+    </div>
+
+    <!-- Popup for Update Schedule -->
+    <div id="updateSchedulePopup" class="popup">
+        <div class="popup-header">Update Schedule</div>
+        <form id="updateScheduleForm" class="form-container">
+            <div class="input-group">
+                <label for="updateTanggalTayang">New Show Date</label>
+                <input type="date" id="updateTanggalTayang" name="tanggalTayang" required>
+            </div>
+            <div class="input-group">
+                <label for="updateJamTayang">New Show Time</label>
+                <input type="time" id="updateJamTayang" name="jamTayang" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Schedule</button>
+        </form>
+    </div>
+
+    <!-- Popup for Delete Confirmation -->
+    <div id="deleteSchedulePopup" class="popup">
+        <div class="popup-header">Delete Schedule</div>
+        <p class="text-center">Are you sure you want to delete this schedule?</p>
+        <div class="popup-buttons">
+            <button class="btn btn-secondary" onclick="closePopup('deleteSchedulePopup')">Cancel</button>
+            <button class="btn btn-danger" onclick="deleteSchedule()">Yes</button>
         </div>
     </div>
 
