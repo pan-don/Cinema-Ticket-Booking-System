@@ -24,7 +24,7 @@ public class PaymentService {
     
     // validasi untuk data integer
     private void validateNumber(String fieldName, int value) {
-        if (value > 0) {
+        if (value < 0) {
             throw new RuntimeException(fieldName + " cannot be negative");
         }
     }
