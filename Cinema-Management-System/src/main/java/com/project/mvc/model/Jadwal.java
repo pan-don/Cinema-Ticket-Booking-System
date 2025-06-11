@@ -3,6 +3,9 @@ package com.project.mvc.model;
 import java.time.LocalDate;      // Import class untuk merepresentasikan tanggal
 import java.time.LocalTime;     // Import class untuk merepresentasikan waktu (jam tayang)
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;  
 import jakarta.persistence.GeneratedValue;
@@ -29,7 +32,8 @@ public class Jadwal {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;    
     
-    @ManyToOne(optional = false)
+    @JsonBackReference
+    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "film_id", nullable = false)
     private Film film;
 

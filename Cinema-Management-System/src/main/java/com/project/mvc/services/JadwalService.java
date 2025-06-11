@@ -2,7 +2,10 @@ package com.project.mvc.services;
 
 import java.time.LocalDate;           // Import class untuk merepresentasikan tanggal
 import java.time.LocalTime;           // Import class untuk merepresentasikan waktu (jam tayang)
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;                // Import class untuk daftar jadwal
+import java.util.Map;
 
 import org.springframework.stereotype.Service;                          // Import untuk anotasi service
 import org.springframework.transaction.annotation.Transactional;       // Import untuk anotasi transaksi
@@ -84,6 +87,40 @@ public class JadwalService {
     @Transactional(readOnly=true)
     public List<Jadwal> getAllJadwal(){
         return jadwalRepo.findAll();
+    }
+
+    // Mengambil semua jadwal dari database beserta judul film
+    @Transactional(readOnly=true)
+    public List<Map<String, Object>> getAllJadwalWithFilmTitle() {
+        List<Jadwal> jadwals = jadwalRepo.findAll();
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        for (Jadwal jadwal : jadwals) {
+            Map<String, Object> scheduleData = new HashMap<>();
+            scheduleData.put("id", jadwal.getId());
+            scheduleData.put("jamTayang", jadwal.getJamTayang());
+            scheduleData.put("tanggalTayang", jadwal.getTanggalTayang());
+            scheduleData.put("filmTitle", jadwal.getFilm().getJudul());
+            result.add(scheduleData);
+        }
+
+        return result;
+    }
+
+    // Mengambil semua jadwal dari database beserta judul film dan detail ruangan
+    @Transactional(readOnly=true)
+    public List<Map<String, Object>> getAllJadwalWithFilmDetails() {
+        List<Map<String, Object>> jadwalWithDetails = new ArrayList<>();
+        for (Jadwal jadwal : jadwalRepo.findAll()) {
+            Map<String, Object> jadwalMap = new HashMap<>();
+            jadwalMap.put("id", jadwal.getId());
+            jadwalMap.put("jamTayang", jadwal.getJamTayang());
+            jadwalMap.put("tanggalTayang", jadwal.getTanggalTayang());
+            jadwalMap.put("filmTitle", jadwal.getFilm().getJudul());
+            jadwalMap.put("filmRoom", jadwal.getFilm().getRuangan());
+            jadwalWithDetails.add(jadwalMap);
+        }
+        return jadwalWithDetails;
     }
 
     // Memeriksa apakah jadwal tayang film tersedia atau tidak

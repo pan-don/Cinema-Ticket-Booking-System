@@ -146,6 +146,10 @@
                     }
                 });
                 const schedules = await response.json();
+
+                // Debugging log to inspect the structure of the data
+                console.log('Raw schedules data from backend:', schedules);
+
                 renderSchedules(schedules);
             } catch (error) {
                 console.error('Error fetching schedules:', error);
@@ -165,11 +169,11 @@
                 const scheduleItem = document.createElement('div');
                 scheduleItem.className = 'management-item';
                 const formattedDate = new Date(schedule.tanggalTayang).toLocaleDateString();
-                
-                // Make sure we can access the film data
+ 
+                // Use filmTitle from backend data
                 const filmTitle = schedule.film?.judul || 'Unknown Film';
                 const filmRoom = schedule.film?.ruangan || 'Unknown Room';
-                
+
                 scheduleItem.innerHTML = `
                     <h3>${filmTitle} | ${schedule.jamTayang}</h3>
                     <p class="text-gray">Date: ${formattedDate}</p>

@@ -3,6 +3,7 @@ package com.project.mvc.controller;
 import java.time.LocalDate;     // Import class untuk merepresentasikan tanggal
 import java.time.LocalTime;    // Import class untuk merepresentasikan waktu (jam tayang)
 import java.util.List;        // Import class untuk daftar jadwal
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,8 +70,8 @@ public class JadwalController {
 
     // Endpoint untuk menampilkan semua jadwal tayang film
     @GetMapping("/showAll")
-    public ResponseEntity<List<Jadwal>> showAllJadwal() {
-        List<Jadwal> jadwals = jadwalService.getAllJadwal();
+    public ResponseEntity<List<Map<String, Object>>> showAllJadwal() {
+        List<Map<String, Object>> jadwals = jadwalService.getAllJadwalWithFilmDetails();
         return ResponseEntity.ok(jadwals);
     }
 }

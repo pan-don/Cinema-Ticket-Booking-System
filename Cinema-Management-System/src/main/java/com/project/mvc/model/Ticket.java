@@ -53,5 +53,8 @@ public class Ticket {
     private int kuantitas;
 
     @Column(nullable = false)
+    private int totalHarga;
+
+    @Column(nullable = false)
     private LocalDateTime waktuPembelian;
 }

@@ -80,6 +80,7 @@ public class PaymentService {
         ticket.setPembayaran(pembayaran);
         ticket.setKembalian(kembalian);
         ticket.setKuantitas(kuantitas);
+        ticket.setTotalHarga(totalHarga);
         ticket.setWaktuPembelian(java.time.LocalDateTime.now());
 
         return ticketRepo.save(ticket);

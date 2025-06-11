@@ -78,9 +78,13 @@ public class FilmService {
         return filmRepo.save(film);                  // Menyimpan perubahan film ke database
     }
 
+    @Transactional
     public void deleteFilm(String filmId){         // Method untuk menghapus film berdasarkan ID
         Film film = filmRepo.findById(filmId)     // Mencari film berdasarkan ID
         .orElseThrow(() -> new RuntimeException("Film not found"));
+
+        // Hapus semua jadwal terkait
+        film.getJadwals().clear();
 
         filmRepo.delete(film);
     }  
@@ -90,7 +94,9 @@ public class FilmService {
     // Menandakan bahwa metode ini hanya membaca data, tidak mengubahnya
     @Transactional(readOnly=true)   
     public List<Film> getAllFilm(){
-        return filmRepo.findAll();
+        List<Film> films = filmRepo.findAll();
+        System.out.println("Film yang ditemukan: " + films);
+        return films;
     }
 }   
 // Method untuk mendapatkan semua film dari database

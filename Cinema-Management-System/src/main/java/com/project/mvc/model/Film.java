@@ -1,13 +1,19 @@
 package com.project.mvc.model;
 
 // Import class untuk merepresentasikan waktu (durasi)
-import java.time.LocalTime;        
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;              // Import untuk anotasi kolom pada JPA
 import jakarta.persistence.Entity;              // Import untuk anotasi entitas pada JPA
 import jakarta.persistence.GeneratedValue;      // Import untuk anotasi generasi nilai pada JPA
 import jakarta.persistence.GenerationType;      // Import untuk strategi generasi nilai pada JPA
 import jakarta.persistence.Id;                  // Import untuk anotasi ID pada JPA
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;               // Import untuk anotasi tabel pada JPA
 import lombok.AllArgsConstructor;               // Import untuk anotasi Lombok yang meng-generate constructor dengan semua atribut sebagai parameter
 import lombok.Getter;                           // Import untuk anotasi Lombok yang meng-generate getter methods
@@ -23,7 +29,13 @@ import lombok.Setter;                           // Import untuk anotasi Lombok y
 public class Film {
     @Id // Menandakan bahwa field ini adalah primary key
     @GeneratedValue(strategy = GenerationType.UUID) // Menghasilkan nilai unik secara otomatis
-    private String id;    @Column(nullable = false, unique = true)
+    private String id;   
+    
+    @JsonManagedReference
+    @OneToMany(mappedBy = "film", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Jadwal> jadwals = new ArrayList<>();
+    
+    @Column(nullable = false, unique = true)
     private String judul;
 
     @Column(nullable = false) // Menandakan bahwa kolom ini tidak boleh null
