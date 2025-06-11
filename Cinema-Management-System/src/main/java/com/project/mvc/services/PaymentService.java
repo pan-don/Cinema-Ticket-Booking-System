@@ -75,7 +75,8 @@ public class PaymentService {
         Ticket ticket = new Ticket();
         ticket.setUser(user);
         ticket.setJadwal(jadwal);
-        ticket.setFilm(film);
+        ticket.setJudulFilm(film.getJudul());
+        ticket.setRuanganFilm(film.getRuangan());
         ticket.setPembayaran(pembayaran);
         ticket.setKembalian(kembalian);
         ticket.setKuantitas(kuantitas);

@@ -166,7 +166,7 @@
             container.innerHTML = tickets.map(ticket => `
                 <div class="ticket-card">
                     <div class="ticket-header">
-                        <h3 class="ticket-title">${ticket.film.judul}</h3>
+                        <h3 class="ticket-title">${ticket.judulFilm}</h3> 
                     </div>
                     <div class="ticket-info">
                         <div class="ticket-info-item">
@@ -179,7 +179,7 @@
                         </div>
                         <div class="ticket-info-item">
                             <span class="ticket-info-label">Room:</span>
-                            <span class="ticket-info-value">${ticket.film.ruangan}</span>
+                            <span class="ticket-info-value">${ticket.ruanganFilm}</span>
                         </div>
                         <div class="ticket-info-item">
                             <span class="ticket-info-label">Quantity:</span>
