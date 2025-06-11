@@ -19,29 +19,31 @@ import lombok.RequiredArgsConstructor;
 public class JadwalService {
     private final FilmRepository filmRepo;
     private final JadwalRepository jadwalRepo;
-
+    
+    // Menyimpan data jadwal baru ke database 
     @Transactional
     public Jadwal createJadwal(
         String filmId, 
         LocalTime jamTayang, 
         LocalDate tanggalTayang
     ) {
+        //mencari film berdasarkan id
         Film film = filmRepo.findById(filmId)
         .orElseThrow(() -> new RuntimeException("Film not found"));
-
+        //Validasi agar jadwal tidak bentrok
        if(jadwalAvailable(film, jamTayang, tanggalTayang)){
         throw new RuntimeException("Jadwal already exist");
        }
-        
+        // membuat objek jadwal baru
         Jadwal jadwal = new Jadwal();
 
         jadwal.setFilm(film);
         jadwal.setJamTayang(jamTayang);
         jadwal.setTanggalTayang(tanggalTayang);
-
+       
         return jadwalRepo.save(jadwal);
     }
-
+    //memperbarui data jadwal yang sudah ada
     @Transactional
     public Jadwal updateJadwal(
         String jadwalId, 
@@ -83,15 +85,15 @@ public class JadwalService {
         if (tanggalTayang.isBefore(LocalDate.now())) {
             return true;
         }
-
+        //ambil semua jadwal
         List<Jadwal> listJadwal = getAllJadwal();
 
         for(Jadwal jadwal: listJadwal){
             if(jadwal.getJamTayang().equals(jamTayang) 
             && jadwal.getTanggalTayang().equals(tanggalTayang)
             && jadwal.getFilm().getRuangan().equalsIgnoreCase(film.getRuangan())
-            ) {return true;}
+            ) {return true;} //bentrok
         }
-        return false;
+        return false; //tidak bentrok
     }
 }

@@ -8,5 +8,5 @@ import com.project.mvc.model.Film;
 import com.project.mvc.model.Jadwal;
 
 public interface JadwalRepository extends JpaRepository<Jadwal, String> {
-    List<Jadwal> findByFilm(Film film);
+    List<Jadwal> findByFilm(Film film); // Mengambil semua jadwal berdasarkan film tertentu
 }
