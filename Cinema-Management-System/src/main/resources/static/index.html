@@ -90,7 +90,7 @@
                     }, 1000);
                 } else {
                     const errorData = await response.json().catch(() => null);
-                    errorDiv.textContent = errorData?.message || 'Invalid credentials or server error.';
+                    errorDiv.textContent = errorData?.message || 'Recheck your password or username.';
                     errorDiv.style.display = 'block';
                     loginButton.disabled = false;
                     loginButton.textContent = 'Login';
