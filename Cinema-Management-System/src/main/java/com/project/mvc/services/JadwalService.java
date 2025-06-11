@@ -1,21 +1,23 @@
 package com.project.mvc.services;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
+import java.time.LocalDate;           // Import class untuk merepresentasikan tanggal
+import java.time.LocalTime;           // Import class untuk merepresentasikan waktu (jam tayang)
+import java.util.List;                // Import class untuk daftar jadwal
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;                          // Import untuk anotasi service
+import org.springframework.transaction.annotation.Transactional;       // Import untuk anotasi transaksi
 
-import com.project.mvc.model.Film;
-import com.project.mvc.model.Jadwal;
-import com.project.mvc.repository.FilmRepository;
-import com.project.mvc.repository.JadwalRepository;
+import com.project.mvc.model.Film;                         // Import model Film
+import com.project.mvc.model.Jadwal;                       // Import model Jadwal
+import com.project.mvc.repository.FilmRepository;          // Import repository FilmRepository
+import com.project.mvc.repository.JadwalRepository;       // Import repository JadwalRepository
 
 import lombok.RequiredArgsConstructor;
 
-@Service
-@RequiredArgsConstructor
+@Service                       // Menandakan bahwa kelas ini adalah service Spring
+@RequiredArgsConstructor       // Menggunakan Lombok untuk meng-generate constructor dengan parameter final field
+
+// Service untuk menangani logika bisnis terkait jadwal tayang film
 public class JadwalService {
     private final FilmRepository filmRepo;
     private final JadwalRepository jadwalRepo;
@@ -43,6 +45,7 @@ public class JadwalService {
        
         return jadwalRepo.save(jadwal);
     }
+
     //memperbarui data jadwal yang sudah ada
     @Transactional
     public Jadwal updateJadwal(
@@ -63,6 +66,7 @@ public class JadwalService {
         return jadwalRepo.save(jadwal);
     }
 
+    //menghapus jadwal berdasarkan id
     @Transactional
     public void deleteJadwal(String jadwalId){
         Jadwal jadwal = jadwalRepo.findById(jadwalId)
@@ -71,16 +75,18 @@ public class JadwalService {
         jadwalRepo.delete(jadwal);
     }
 
-
+    // Mengambil jadwal berdasarkan ID
     public List<Jadwal> getJadwalByFilm(Film film){
         return jadwalRepo.findByFilm(film);
     }
 
+    // Mengambil semua jadwal dari database
     @Transactional(readOnly=true)
     public List<Jadwal> getAllJadwal(){
         return jadwalRepo.findAll();
     }
 
+    // Memeriksa apakah jadwal tayang film tersedia atau tidak
     public boolean jadwalAvailable(Film film, LocalTime jamTayang, LocalDate tanggalTayang){
         if (tanggalTayang.isBefore(LocalDate.now())) {
             return true;
