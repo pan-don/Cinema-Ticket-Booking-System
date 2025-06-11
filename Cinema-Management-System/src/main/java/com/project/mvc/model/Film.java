@@ -1,17 +1,18 @@
 package com.project.mvc.model;
 
-import java.time.LocalTime;            // Import class untuk merepresentasikan waktu (durasi)
+// Import class untuk merepresentasikan waktu (durasi)
+import java.time.LocalTime;        
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.Column;              // Import untuk anotasi kolom pada JPA
+import jakarta.persistence.Entity;              // Import untuk anotasi entitas pada JPA
+import jakarta.persistence.GeneratedValue;      // Import untuk anotasi generasi nilai pada JPA
+import jakarta.persistence.GenerationType;      // Import untuk strategi generasi nilai pada JPA
+import jakarta.persistence.Id;                  // Import untuk anotasi ID pada JPA
+import jakarta.persistence.Table;               // Import untuk anotasi tabel pada JPA
+import lombok.AllArgsConstructor;               // Import untuk anotasi Lombok yang meng-generate constructor dengan semua atribut sebagai parameter
+import lombok.Getter;                           // Import untuk anotasi Lombok yang meng-generate getter methods
+import lombok.NoArgsConstructor;                // Import untuk anotasi Lombok yang meng-generate constructor tanpa parameter
+import lombok.Setter;                           // Import untuk anotasi Lombok yang meng-generate setter methods
 
 @Entity // Menandakan bahwa kelas ini adalah entitas JPA
 @Getter // Lombok untuk otomatis generate getter
@@ -32,10 +33,10 @@ public class Film {
     private String sinopsis;   // Sinopsis atau ringkasan film
 
     @Column(nullable = false)
-    private LocalTime durasi;    // Menggunakan LocalTime untuk durasi film
+    private LocalTime durasi;  // Menggunakan LocalTime untuk durasi film
 
     @Column(nullable = false)
-    private String ruangan;      // Nama ruangan tempat film diputar
+    private String ruangan;    // Nama ruangan tempat film diputar
 
     @Column(nullable = false)
     private int kapasitasRuangan;   // Kapasitas ruangan untuk penonton
