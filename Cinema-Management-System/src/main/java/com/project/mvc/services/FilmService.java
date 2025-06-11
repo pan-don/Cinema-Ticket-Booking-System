@@ -1,28 +1,28 @@
 package com.project.mvc.services;
 
-import java.time.LocalTime;            // Import class untuk merepresentasikan waktu (durasi)
-import java.util.List;                 // Import class untuk daftar film
+import java.time.LocalTime;       // Import class untuk merepresentasikan waktu (durasi)
+import java.util.List;            // Import class untuk daftar film
 
 import org.springframework.stereotype.Service;                       // Import untuk anotasi service
-import org.springframework.transaction.annotation.Transactional;      // Import untuk anotasi transaksi
+import org.springframework.transaction.annotation.Transactional;     // Import untuk anotasi transaksi
 
 import com.project.mvc.model.Film;                      // Import model Film
 import com.project.mvc.repository.FilmRepository;      // Import repository Film
 
-import lombok.RequiredArgsConstructor;           // Import untuk anotasi Lombok yang meng-generate constructor dengan semua field sebagai parameter
+import lombok.RequiredArgsConstructor;    // Import untuk anotasi Lombok yang meng-generate constructor dengan semua field sebagai parameter
 
 @Service                     // Menandakan bahwa kelas ini adalah service Spring
 @RequiredArgsConstructor     // Menggunakan Lombok untuk meng-generate constructor dengan parameter final field
 public class FilmService {
-    private final FilmRepository filmRepo;          // Repository untuk akses data film 
+    private final FilmRepository filmRepo;    // Repository untuk akses data film 
 
     private void validatePositiveNumber(String fieldName, int value) {
         if (value < 0) {
             throw new RuntimeException(fieldName + " cannot be negative");
         }
-    }                    // Method untuk validasi angka positif, memberikan exception jika nilai negatif
+    }  // Method untuk validasi angka positif, memberikan exception jika nilai negatif
 
-    @Transactional      // Menandakan bahwa metode ini akan dijalankan dalam transaksi
+    @Transactional                   // Menandakan bahwa metode ini akan dijalankan dalam transaksi
     public Film createFilm(         // Method untuk membuat film baru
         String judul,
         String genre,
@@ -35,14 +35,15 @@ public class FilmService {
     ) {
         if(filmRepo.findByJudul(judul).isPresent()) {
             throw new RuntimeException("Judul already exists");
-        }       // filmRepo.findByJudul(judul) untuk mengecek apakah judul film sudah ada
+        } // filmRepo.findByJudul(judul) untuk mengecek apakah judul film sudah ada
 
         // Validate positive numbers
         validatePositiveNumber("Room capacity", kapasitasRuangan);
         validatePositiveNumber("Price", harga);
         validatePositiveNumber("Sold tickets", tiketTerjual);
 
-        Film film = new Film();      // Membuat instance baru dari Film
+        // Membuat detail baru dari Film
+        Film film = new Film();      
         film.setJudul(judul);
         film.setGenre(genre);
         film.setSinopsis(sinopsis);
@@ -53,9 +54,10 @@ public class FilmService {
         film.setTiketTerjual(tiketTerjual);
 
         return filmRepo.save(film);
-    } // Method untuk menyimpan film baru ke database
+    }   // Method untuk menyimpan film baru ke database
 
-    @Transactional   // Metode ini akan dijalankan dalam transaksi
+    // Metode ini akan dijalankan dalam transaksi
+    @Transactional   
     public Film updateFilm(
         String filmId,
         String ruangan,
@@ -69,24 +71,26 @@ public class FilmService {
         Film film = filmRepo.findById(filmId)
         .orElseThrow(() -> new RuntimeException("Film not found"));
 
-        film.setRuangan(ruangan);          // Mengupdate ruangan film
+        film.setRuangan(ruangan);                        // Mengupdate ruangan film
         film.setKapasitasRuangan(kapasitasRuangan);     // Mengupdate kapasitas ruangan
-        film.setHarga(harga);     // Mengupdate harga tiket
+        film.setHarga(harga);                          // Mengupdate harga tiket
 
-        return filmRepo.save(film);    // Menyimpan perubahan film ke database
+        return filmRepo.save(film);                  // Menyimpan perubahan film ke database
     }
 
-    public void deleteFilm(String filmId){     // Method untuk menghapus film berdasarkan ID
-        Film film = filmRepo.findById(filmId)  // Mencari film berdasarkan ID
+    public void deleteFilm(String filmId){         // Method untuk menghapus film berdasarkan ID
+        Film film = filmRepo.findById(filmId)     // Mencari film berdasarkan ID
         .orElseThrow(() -> new RuntimeException("Film not found"));
 
         filmRepo.delete(film);
-    }  // Menghapus film dari database
+    }  
+    // Menghapus film dari database
 
     
-
-    @Transactional(readOnly=true)     // Menandakan bahwa metode ini hanya membaca data, tidak mengubahnya
+    // Menandakan bahwa metode ini hanya membaca data, tidak mengubahnya
+    @Transactional(readOnly=true)   
     public List<Film> getAllFilm(){
         return filmRepo.findAll();
     }
-}   // Method untuk mendapatkan semua film dari database
+}   
+// Method untuk mendapatkan semua film dari database
