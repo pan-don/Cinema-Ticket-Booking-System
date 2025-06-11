@@ -1,6 +1,6 @@
 package com.project.mvc.model;
 
-import java.time.LocalTime;
+import java.time.LocalTime;            // Import class untuk merepresentasikan waktu (durasi)
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,36 +13,36 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name="films")
+@Entity // Menandakan bahwa kelas ini adalah entitas JPA
+@Getter // Lombok untuk otomatis generate getter
+@Setter // Lombok untuk otomatis generate setter
+@NoArgsConstructor // Lombok untuk otomatis generate constructor tanpa parameter
+@AllArgsConstructor // Lombok untuk otomatis generate constructor dengan semua parameter
+@Table(name="films") // Menentukan nama tabel dalam database yang akan digunakan untuk entitas ini
 public class Film {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @Id // Menandakan bahwa field ini adalah primary key
+    @GeneratedValue(strategy = GenerationType.UUID) // Menghasilkan nilai unik secara otomatis
     private String id;    @Column(nullable = false, unique = true)
     private String judul;
 
-    @Column(nullable = false)
-    private String genre;
+    @Column(nullable = false) // Menandakan bahwa kolom ini tidak boleh null
+    private String genre;     // Genre film, misalnya Action, Drama, dll.
 
     @Column(nullable = false)
-    private String sinopsis;
+    private String sinopsis;   // Sinopsis atau ringkasan film
 
     @Column(nullable = false)
-    private LocalTime durasi;
+    private LocalTime durasi;    // Menggunakan LocalTime untuk durasi film
 
     @Column(nullable = false)
-    private String ruangan;
+    private String ruangan;      // Nama ruangan tempat film diputar
 
     @Column(nullable = false)
-    private int kapasitasRuangan;
+    private int kapasitasRuangan;   // Kapasitas ruangan untuk penonton
     
     @Column(nullable = false)
-    private int harga;
+    private int harga;          // Harga tiket untuk film ini
     
     @Column(nullable = false)
-    private int tiketTerjual;
+    private int tiketTerjual;    // Jumlah tiket yang sudah terjual
 }
