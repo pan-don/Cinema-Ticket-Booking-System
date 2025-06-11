@@ -24,6 +24,7 @@ public class FilmController {
     private final LoginService loginService;
     private final FilmService filmService;
 
+    // Endpoint untuk membuat film baru
     @PostMapping("/create")
     public ResponseEntity<Film> createFilm(
         @RequestParam String username,
@@ -37,13 +38,14 @@ public class FilmController {
         @RequestParam int harga,
         @RequestParam int tiketTerjual
     ) {
-        loginService.loginAdmin(username, password);
+        loginService.loginAdmin(username, password);             // Memanggil service login untuk memverifikasi admin
         
         Film createdFilm = filmService.createFilm(judul, genre, sinopsis, durasi, ruangan, 
             kapasitasRuangan, harga, tiketTerjual);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdFilm);
     }
 
+    // Endpoint untuk memperbarui film yang sudah ada
     @PostMapping("/update")
     public ResponseEntity<Film> updateFilm(
         @RequestParam String username,
@@ -58,6 +60,7 @@ public class FilmController {
         return ResponseEntity.ok(updatedFilm);
     }
 
+    // Endpoint untuk menghapus film
     @PostMapping("/delete")
     public ResponseEntity<Void> deleteFilm(
         @RequestParam String username,
@@ -69,6 +72,7 @@ public class FilmController {
         return ResponseEntity.noContent().build();
     }    
     
+    // Endpoint untuk menampilkan semua film untuk user
     @PostMapping("/showAlluser")
     public ResponseEntity<List<Film>> showAllFilmUser(
         @RequestParam String username,
@@ -79,6 +83,7 @@ public class FilmController {
         return ResponseEntity.ok(films);
     }
 
+    // Endpoint untuk menampilkan semua film untuk admin
     @GetMapping("/all")
     public ResponseEntity<List<Film>> getAllFilms() {
         List<Film> films = filmService.getAllFilm();
