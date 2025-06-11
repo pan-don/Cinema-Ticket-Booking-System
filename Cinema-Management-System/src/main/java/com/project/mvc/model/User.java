@@ -1,9 +1,7 @@
 package com.project.mvc.model;
-
+// Package tempat file file terkait berada 
 import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -17,6 +15,6 @@ import lombok.Setter;
 @Table(name="users")
 public class User extends Person {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference //Menghindari masalah infinite recursion saat serialisasi JSON
     private List<Ticket> tickets;
 }
