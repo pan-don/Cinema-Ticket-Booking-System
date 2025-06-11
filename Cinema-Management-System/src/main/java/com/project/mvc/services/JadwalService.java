@@ -1,26 +1,24 @@
 package com.project.mvc.services;
 
-import java.time.LocalDate;           // Import class untuk merepresentasikan tanggal
-import java.time.LocalTime;           // Import class untuk merepresentasikan waktu (jam tayang)
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;                // Import class untuk daftar jadwal
+import java.util.List;
 import java.util.Map;
 
-import org.springframework.stereotype.Service;                          // Import untuk anotasi service
-import org.springframework.transaction.annotation.Transactional;       // Import untuk anotasi transaksi
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.project.mvc.model.Film;                         // Import model Film
-import com.project.mvc.model.Jadwal;                       // Import model Jadwal
-import com.project.mvc.repository.FilmRepository;          // Import repository FilmRepository
-import com.project.mvc.repository.JadwalRepository;       // Import repository JadwalRepository
+import com.project.mvc.model.Film;
+import com.project.mvc.model.Jadwal;
+import com.project.mvc.repository.FilmRepository;
+import com.project.mvc.repository.JadwalRepository;
 
 import lombok.RequiredArgsConstructor;
 
-@Service                       // Menandakan bahwa kelas ini adalah service Spring
-@RequiredArgsConstructor       // Menggunakan Lombok untuk meng-generate constructor dengan parameter final field
-
-// Service untuk menangani logika bisnis terkait jadwal tayang film
+@Service
+@RequiredArgsConstructor
 public class JadwalService {
     private final FilmRepository filmRepo;
     private final JadwalRepository jadwalRepo;
@@ -36,7 +34,7 @@ public class JadwalService {
         Film film = filmRepo.findById(filmId)
         .orElseThrow(() -> new RuntimeException("Film not found"));
         //Validasi agar jadwal tidak bentrok
-       if(jadwalAvailable(film, jamTayang, tanggalTayang)){
+       if(isJadwalBentrok(film, jamTayang, tanggalTayang)){
         throw new RuntimeException("Jadwal already exist");
        }
         // membuat objek jadwal baru
@@ -59,7 +57,7 @@ public class JadwalService {
         Jadwal jadwal = jadwalRepo.findById(jadwalId)
         .orElseThrow(() -> new RuntimeException("Jadwal not found"));
 
-        if(jadwalAvailable(jadwal.getFilm(), jamTayang, tanggalTayang)){
+        if(isJadwalBentrok(jadwal.getFilm(), jamTayang, tanggalTayang)){
         throw new RuntimeException("Jadwal already exist");
        }
 
@@ -81,12 +79,19 @@ public class JadwalService {
     // Mengambil jadwal berdasarkan ID
     public List<Jadwal> getJadwalByFilm(Film film){
         return jadwalRepo.findByFilm(film);
-    }
-
-    // Mengambil semua jadwal dari database
+    }    // Mengambil semua jadwal dari database
     @Transactional(readOnly=true)
-    public List<Jadwal> getAllJadwal(){
-        return jadwalRepo.findAll();
+    public List<Jadwal> getAllJadwalEntities() {
+        List<Jadwal> jadwals = jadwalRepo.findAll();
+        // Sort schedules by date and time for better presentation
+        jadwals.sort((a, b) -> {
+            int dateCompare = a.getTanggalTayang().compareTo(b.getTanggalTayang());
+            if (dateCompare != 0) {
+                return dateCompare;
+            }
+            return a.getJamTayang().compareTo(b.getJamTayang());
+        });
+        return jadwals;
     }
 
     // Mengambil semua jadwal dari database beserta judul film
@@ -124,14 +129,14 @@ public class JadwalService {
     }
 
     // Memeriksa apakah jadwal tayang film tersedia atau tidak
-    public boolean jadwalAvailable(Film film, LocalTime jamTayang, LocalDate tanggalTayang){
+    private boolean isJadwalBentrok(Film film, LocalTime jamTayang, LocalDate tanggalTayang){
         if (tanggalTayang.isBefore(LocalDate.now())) {
             return true;
         }
         //ambil semua jadwal
-        List<Jadwal> listJadwal = getAllJadwal();
+        List<Jadwal> allJadwals = jadwalRepo.findAll();
 
-        for(Jadwal jadwal: listJadwal){
+        for(Jadwal jadwal: allJadwals){
             if(jadwal.getJamTayang().equals(jamTayang) 
             && jadwal.getTanggalTayang().equals(tanggalTayang)
             && jadwal.getFilm().getRuangan().equalsIgnoreCase(film.getRuangan())

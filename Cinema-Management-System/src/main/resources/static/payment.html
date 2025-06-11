@@ -51,10 +51,10 @@
             <!-- Will be populated by JavaScript -->
         </div>
 
-        <form id="paymentForm" class="form-container">
+    <form id="paymentForm" class="form-container" style="display: none;">
             <div class="input-group">
                 <label for="kuantitas">Quantity</label>
-                <input type="number" id="kuantitas" name="kuantitas" value="1" min="1" max="10" required 
+                <input type="number" id="kuantitas" name="kuantitas" value="1" min="1" required 
                        oninput="calculateTotal()">
             </div>
 
@@ -96,26 +96,34 @@
         function getScheduleId() {
             const params = new URLSearchParams(window.location.search);
             return params.get('scheduleId');
-        }
-
-        // Fetch schedule and film details
+        }        // Fetch schedule and film details
         async function fetchScheduleDetails() {
             try {
-                const response = await fetch('/api/scheduls/showAll');
-                const schedules = await response.json();
                 const scheduleId = getScheduleId();
+                if (!scheduleId) {
+                    alert('Invalid schedule ID!');
+                    window.location.href = 'user_dashboard.html';
+                    return;
+                }
+
+                const response = await fetch('/api/schedules/showAll');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const schedules = await response.json();
                 
                 schedule = schedules.find(s => s.id === scheduleId);
-                if (schedule) {
+                if (schedule && schedule.film) {
                     selectedFilm = schedule.film;
                     displayMovieDetails();
+                    document.getElementById('paymentForm').style.display = 'block';
                 } else {
-                    alert('Schedule not found!');
-                    window.location.href = 'user_dashboard.html';
+                    throw new Error('Schedule or film not found!');
                 }
             } catch (error) {
                 console.error('Error fetching schedule:', error);
-                alert('Error loading schedule details');
+                alert('Error: ' + error.message);
+                window.location.href = 'user_dashboard.html';
             }
         }
 
@@ -131,11 +139,12 @@
             `;
 
             calculateTotal();
-        }
-
-        // Calculate total based on quantity
+        }        // Calculate total based on quantity
         function calculateTotal() {
-            if (!selectedFilm) return;
+            if (!selectedFilm || !selectedFilm.harga) {
+                console.error('Film or price not available');
+                return;
+            }
 
             const quantity = parseInt(document.getElementById('kuantitas').value) || 0;
             const total = quantity * selectedFilm.harga;
@@ -143,10 +152,16 @@
             
             // Update payment field minimum and validate max quantity
             const paymentField = document.getElementById('pembayaran');
-            const maxSeats = selectedFilm.kapasitasRuangan;
+            const maxSeats = selectedFilm.kapasitasRuangan || 0;
             const quantityInput = document.getElementById('kuantitas');
             
-            if (quantity > maxSeats) {
+            if (quantity <= 0) {
+                quantityInput.value = 1;
+                calculateTotal();
+                return;
+            }
+            
+            if (maxSeats > 0 && quantity > maxSeats) {
                 alert(`Sorry, only ${maxSeats} seats available`);
                 quantityInput.value = maxSeats;
                 calculateTotal();
@@ -177,15 +192,29 @@
                 notification.style.display = 'none';
                 window.location.href = 'ticket_history.html';
             }, 3000); // Show for 3 seconds
-        }
-
-        // Handle form submission
+        }        // Handle form submission
         document.getElementById('paymentForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            if (!selectedFilm || !schedule) {
+                alert('Please wait for schedule details to load');
+                return;
+            }
             
             const quantity = parseInt(document.getElementById('kuantitas').value);
             const payment = parseInt(document.getElementById('pembayaran').value);
             const totalAmount = selectedFilm.harga * quantity;
+
+            // Basic validations
+            if (isNaN(quantity) || quantity <= 0) {
+                alert('Please enter a valid quantity');
+                return;
+            }
+
+            if (isNaN(payment) || payment <= 0) {
+                alert('Please enter a valid payment amount');
+                return;
+            }
 
             // Validate payment amount
             if (payment < totalAmount) {
@@ -202,6 +231,11 @@
             }
 
             try {
+                // Disable form submission while processing
+                const submitButton = document.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.textContent = 'Processing...';
+
                 const response = await fetch('/api/payments/buy', {
                     method: 'POST',
                     headers: {
@@ -216,16 +250,21 @@
                     })
                 });
 
+                const data = await response.json();
+
                 if (response.ok) {
-                    const ticket = await response.json();
                     showNotification();
                 } else {
-                    const errorText = await response.text();
-                    alert('Payment failed: ' + errorText);
+                    throw new Error(data.message || 'Payment failed');
                 }
             } catch (error) {
                 console.error('Error processing payment:', error);
-                alert('Error processing payment: ' + error.message);
+                alert('Error: ' + (error.message || 'Failed to process payment'));
+            } finally {
+                // Re-enable form submission
+                const submitButton = document.querySelector('button[type="submit"]');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Confirm Purchase';
             }
         });
 

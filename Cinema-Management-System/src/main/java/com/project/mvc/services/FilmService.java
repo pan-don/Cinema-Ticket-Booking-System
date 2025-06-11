@@ -97,6 +97,7 @@ public class FilmService {
         List<Film> films = filmRepo.findAll();
         System.out.println("Film yang ditemukan: " + films);
         return films;
+    
     }
 }   
 // Method untuk mendapatkan semua film dari database

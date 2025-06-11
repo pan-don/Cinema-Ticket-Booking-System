@@ -109,6 +109,38 @@
         .logout-btn:hover {
             background-color: #bd2130;
         }
+        .schedule-container {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .schedule-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            color: #B3B3B3;
+        }
+        .highlight {
+            color: #4CAF50;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #B3B3B3;
+        }
+        .error-message {
+            text-align: center;
+            padding: 2rem;
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        .error-message button {
+            margin-top: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -137,16 +169,41 @@
     </div>
 
     <script>
-        // Fetch schedules and group them by movies
+        function showError(message) {
+            const movieList = document.getElementById('movieList');
+            movieList.innerHTML = `
+                <div class="error-message">
+                    <h3>Error Loading Movies</h3>
+                    <p>${message}</p>
+                    <button onclick="fetchSchedules()" class="btn btn-primary">Try Again</button>
+                </div>
+            `;
+        }
+
         async function fetchSchedules() {
+            const movieList = document.getElementById('movieList');
+            movieList.innerHTML = '<div class="loading">Loading movie schedules...</div>';
+            
             try {
-                const response = await fetch('/api/scheduls/showAll');
+                const response = await fetch('/api/schedules/showAll');
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
                 const schedules = await response.json();
+                
+                if (!Array.isArray(schedules) || schedules.length === 0) {
+                    showError('No movie schedules available at the moment.');
+                    return;
+                }
                 
                 // Group schedules by film
                 const movieMap = new Map();
                 schedules.forEach(schedule => {
                     const film = schedule.film;
+                    if (!film || !film.id) {
+                        console.warn('Invalid schedule data:', schedule);
+                        return;
+                    }
                     if (!movieMap.has(film.id)) {
                         movieMap.set(film.id, {
                             film: film,
@@ -156,17 +213,22 @@
                     movieMap.get(film.id).schedules.push(schedule);
                 });
                 
-                renderMovies(Array.from(movieMap.values()));
+                const movies = Array.from(movieMap.values());
+                if (movies.length === 0) {
+                    showError('No valid movie schedules found.');
+                    return;
+                }
+                
+                renderMovies(movies);
             } catch (error) {
                 console.error('Error fetching schedules:', error);
+                showError(error.message || 'Failed to load movie schedules. Please try again later.');
             }
         }
         /*menampilkan data film ke dalam halaman HTML*/
         function renderMovies(moviesData) {
             const movieList = document.getElementById('movieList');
-            movieList.innerHTML = ''; /*Menghapus konten sebelumnya*/
-
-            moviesData.forEach(({film, schedules}) => {
+            movieList.innerHTML = ''; /*Menghapus konten sebelumnya*/            moviesData.forEach(({film, schedules}) => {
                 const movieCard = document.createElement('div');
                 movieCard.className = 'movie-card';
                 movieCard.dataset.filmId = film.id;
@@ -176,18 +238,42 @@
                     <img src="${film.gambarURL || 'https://placehold.co/600x400/1E1E1E/FFFFFF?text=Movie+Poster'}" alt="${film.judul} Poster">
                     <div class="movie-card-content">
                         <h3>${film.judul}</h3>
-                        <p>${film.sinopsis.substring(0, 150)}...</p>
+                        <p>${film.sinopsis ? film.sinopsis.substring(0, 150) + '...' : 'No synopsis available'}</p>
                         <div class="movie-details">
-                            <span>Genre: <strong>${film.genre}</strong></span>
-                            <span>Price: <strong class="highlight">Rp ${film.harga.toLocaleString()}</strong></span>
-                            <span>Room: <strong>${film.ruangan}</strong></span>
+                            <span>Genre: <strong>${film.genre || 'N/A'}</strong></span>
+                            <span>Price: <strong class="highlight">Rp ${film.harga ? film.harga.toLocaleString() : 'N/A'}</strong></span>
+                            <span>Room: <strong>${film.ruangan || 'N/A'}</strong></span>
+                            <span>Duration: <strong>${film.durasi || 'N/A'}</strong></span>
                             <span>Available Times:</span>
                             ${schedules.map(s => {
-                                const formattedDate = new Date(s.tanggalTayang).toLocaleDateString();
+                                let formattedDate = 'N/A';
+                                let formattedTime = 'N/A';
+                                try {
+                                    // Parse the date string
+                                    const date = s.tanggalTayang ? new Date(s.tanggalTayang + 'T00:00:00') : null;
+                                    formattedDate = date ? date.toLocaleDateString('id-ID', {
+                                        weekday: 'long',
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                    }) : 'N/A';
+                                    
+                                    // Format the time
+                                    formattedTime = s.jamTayang || 'N/A';
+                                } catch (e) {
+                                    console.error('Error formatting date/time:', e);
+                                }
+                                
                                 return `
-                                    <div class="button-container">
-                                        <button onclick="bookSchedule('${s.id}')" class="btn btn-primary schedule-button">Buy Ticket</button>
-                                        <button onclick="showMovieDetails('${film.id}')" class="btn btn-secondary details-button">View Details</button>
+                                    <div class="schedule-container">
+                                        <div class="schedule-info">
+                                            <span>Date: ${formattedDate}</span>
+                                            <span>Time: ${formattedTime}</span>
+                                        </div>
+                                        <div class="button-container">
+                                            <button onclick="bookSchedule('${s.id}')" class="btn btn-primary schedule-button">Buy Ticket</button>
+                                            <button onclick="showMovieDetails('${film.id}')" class="btn btn-secondary details-button">View Details</button>
+                                        </div>
                                     </div>
                                 `;
                             }).join('')}
@@ -205,30 +291,49 @@
             // Find the movie card with matching film ID
             const movieCard = document.querySelector(`[data-film-id="${filmId}"]`);
             if (movieCard) {
-                const movieData = JSON.parse(movieCard.dataset.movieData);
-                const scheduleTimes = movieData.schedules.map(s => {
-                    const formattedDate = new Date(s.tanggalTayang).toLocaleDateString();
+                const movieData = JSON.parse(movieCard.dataset.movieData);                const scheduleTimes = movieData.schedules.map(s => {
+                    let formattedDate = 'N/A';
+                    let formattedTime = 'N/A';
+                    try {
+                        const date = s.tanggalTayang ? new Date(s.tanggalTayang + 'T00:00:00') : null;
+                        formattedDate = date ? date.toLocaleDateString('id-ID', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        }) : 'N/A';
+                        formattedTime = s.jamTayang || 'N/A';
+                    } catch (e) {
+                        console.error('Error formatting date/time:', e);
+                    }
+                    
                     return `
-                        <div class="button-container">
-                            <button onclick="bookSchedule('${s.id}')" class="btn btn-primary schedule-button">Buy Ticket</button>
+                        <div class="schedule-container">
+                            <div class="schedule-info">
+                                <span>${formattedDate}</span>
+                                <span>${formattedTime}</span>
+                            </div>
+                            <div class="button-container">
+                                <button onclick="bookSchedule('${s.id}')" class="btn btn-primary schedule-button">Buy Ticket</button>
+                            </div>
                         </div>
                     `;
-                }).join('');
-                content.innerHTML = `
-                    <h2>${movieData.film.judul}</h2>
+                }).join('');                content.innerHTML = `
+                    <h2>${movieData.film.judul || 'Untitled Movie'}</h2>
                     <div class="movie-details">
-                        <p><strong>Genre:</strong> ${movieData.film.genre}</p>
-                        <p><strong>Room:</strong> ${movieData.film.ruangan}</p>
-                        <p><strong>Price:</strong> Rp ${movieData.film.harga.toLocaleString()}</p>
+                        <p><strong>Genre:</strong> ${movieData.film.genre || 'N/A'}</p>
+                        <p><strong>Room:</strong> ${movieData.film.ruangan || 'N/A'}</p>
+                        <p><strong>Duration:</strong> ${movieData.film.durasi || 'N/A'}</p>
+                        <p><strong>Price:</strong> ${movieData.film.harga ? `Rp ${movieData.film.harga.toLocaleString()}` : 'N/A'}</p>
                     </div>
                     <div class="movie-description">
                         <h3>Synopsis</h3>
-                        <p>${movieData.film.sinopsis}</p>
+                        <p>${movieData.film.sinopsis || 'No synopsis available.'}</p>
                     </div>
                     <div class="schedule-section">
                         <h3>Available Schedules</h3>
                         <div class="movie-schedules">
-                            ${scheduleTimes}
+                            ${scheduleTimes || '<p>No schedules available for this movie.</p>'}
                         </div>
                     </div>
                     <div class="popup-buttons">

@@ -171,8 +171,8 @@
                 const formattedDate = new Date(schedule.tanggalTayang).toLocaleDateString();
  
                 // Use filmTitle from backend data
-                const filmTitle = schedule.film?.judul || 'Unknown Film';
-                const filmRoom = schedule.film?.ruangan || 'Unknown Room';
+                const filmTitle = schedule.filmTitle || 'Unknown Film';
+                const filmRoom = schedule.filmRoom || 'Unknown Room';
 
                 scheduleItem.innerHTML = `
                     <h3>${filmTitle} | ${schedule.jamTayang}</h3>
